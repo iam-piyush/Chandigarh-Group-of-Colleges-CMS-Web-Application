@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyCGC - Login</title>
+  <link rel="stylesheet" href="../static/output.css" />
+  <link rel="shortcut icon" href="../static/Assets/favicon.ico" type="image/x-icon" />
+  <style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      width: auto;
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      appearance: none;
+    }
+
+    .error-message {
+      display: block;
+      position: relative;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      cursor: pointer;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      min-width: 120px;
+      text-align: center;
+      z-index: 1;
+      border-radius: 5px;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 7px;
+      display: block;
+      text-decoration: none;
+      transition: all 0.1s ease-in-out;
+    }
+
+    .dropdown-content a:hover {
+      text-decoration: underline;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .left {
+      -webkit-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.05);
+      -moz-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.05);
+      box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.05);
+    }
+  </style>
+</head>
+
+<body class="bg-black overflow-hidden max-[900px]:bg-white">
+  <main class="h-screen w-screen relative flex justify-center items-center">
+    <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-70 max-[900px]:hidden"
+      style="background-image: url('../static/Assets/Hero.webp');"></div>
+    <div class="absolute bottom-0 left-0 w-full">
+      <img src="../static/Assets/HeroOverlay.png" alt="" class="w-full opacity-80 max-[900px]:hidden">
+    </div>
+    <div
+      class="left bg-neutral-50 max-[900px]:bg-white rounded-xl flex flex-col w-[500px] p-8 absolute top-1/2 right-0 mr-20 transform -translate-y-[55%] max-[900px]:right-auto max-[900px]:left-auto max-[900px]:mr-0 max-[520px]:w-[95%] max-[500px]:p-6 max-[900px]:mb-auto">
+      <section>
+        <div class="">
+          <img src="../static/Assets/logo.webp" alt="CGC Landran" class="w-[250px] max-[500px]:w-[200px]" />
+          <div class="flex items-center justify-center mt-8 max-[500px]:mt-4">
+            <div class="w-full">
+              <h2 class="text-3xl font-bold leading-tight text-black sm:text-4xl">
+                Sign in
+              </h2>
+              <div class="flex items-center mt-2 text-gray-600 text-sm max-[350px]:text-xs">
+                <p class="">Don't have an account?</p>
+                <div class="dropdown ml-1">
+                  <a
+                    class="transition-all text-blue-700 font-bold duration-200 hover:underline cursor-pointer select-none">
+                    Create an account
+                  </a>
+                  <div class="dropdown-content shadow-md bg-white">
+                    <a href="{{ url_for('routes.studentsignup') }}">Student</a>
+                    <a href="{{ url_for('routes.facultysignup') }}">Faculty</a>
+                  </div>
+                </div>
+              </div>
+              <form method="post" action="{{ url_for('routes.login') }}" class="mt-8 max-[500px]:mt-4">
+                <div class="space-y-5 max-[500px]:space-y-3">
+                  <div>
+                    <label for="indicate" class="text-base font-medium text-gray-900">
+                      Please indicate your role:
+                    </label>
+                    <div class="mt-2">
+                      <input type="radio" id="Student" name="role" value="Student" checked />&nbsp;
+                      <label for="Student" class="text-gray-400">Student</label>&nbsp;&nbsp;
+                      <input type="radio" id="Faculty" name="role" value="Faculty" />&nbsp;
+                      <label for="Faculty" class="text-gray-400">Faculty</label>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="userid" class="text-base font-medium text-gray-900">
+                      User ID
+                    </label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="text" placeholder="Student ID or Faculty ID" id="userid" name="userid" required />
+                    </div>
+                    <div id="userid-present-error" class="text-sm text-red-600 font-bold mt-2"></div>
+                  </div>
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <label for="password" class="text-base font-medium text-gray-900">
+                        Password
+                      </label>
+                    </div>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="password" placeholder="Password" id="password" name="password" required />
+                    </div>
+                  </div>
+                  {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category,
+                  message in messages %} {% if category == 'error' or category == 'alert' %}
+                  <div
+                    class="error-message items-center flex {% if category == 'error' %} bg-red-100 {% elif category == 'alert' %} bg-yellow-200 {% endif %}"
+                    role="alert">
+                    <strong>{{ category }}</strong> {{ message }}
+                    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                  </div>
+                  {% endif %} {% endfor %} {% endif %} {% endwith %}
+                  <div>
+                    <button type="submit" value="Log In"
+                      class="inline-flex w-full items-center justify-center rounded-md bg-black py-2.5 font-semibold leading-7 text-white transition ease-in-out delay-100 hover:bg-black/80">
+                      Sign in
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="ml-2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <a href="{{ url_for('routes.team') }}" class="inline-block items-center">
+                <div class="flex items-center mt-2">
+                  <img src="../static/Assets/developer.svg" alt="" style="height: 15px" />
+                  <p class="text-gray-400 text-sm ml-1.5">Developer Team</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const roleRadios = document.querySelectorAll('input[name="role"]');
+      const useridInput = document.getElementById("userid");
+      const signInButton = document.querySelector('button[type="submit"]');
+      const errorDiv = document.getElementById("userid-present-error");
+
+      function updatePlaceholder() {
+        if (document.getElementById("Student").checked) {
+          useridInput.placeholder = "Enter your Student ID";
+        } else if (document.getElementById("Faculty").checked) {
+          useridInput.placeholder = "Enter your Faculty ID";
+        }
+      }
+
+      roleRadios.forEach(function (radio) {
+        radio.addEventListener("change", updatePlaceholder);
+      });
+
+      function isRoleSelected() {
+        return [...roleRadios].some(radio => radio.checked);
+      }
+
+      function checkRoleAndEnableButton() {
+        if (isRoleSelected()) {
+          signInButton.disabled = false;
+          signInButton.style.cursor = "pointer";
+        } else {
+          signInButton.disabled = true;
+          signInButton.style.cursor = "not-allowed";
+        }
+      }
+
+      document.querySelector("form").addEventListener("submit", function (event) {
+        if (!isRoleSelected()) {
+          event.preventDefault();
+        }
+      });
+
+      useridInput.addEventListener("blur", function () {
+        const role = document.querySelector('input[name="role"]:checked').value;
+        const userid = useridInput.value;
+
+        if (userid) {
+          fetch(`/userid_present?role=${role}&userid=${userid}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.exists) {
+                errorDiv.textContent = '';
+              } else {
+                if (role === 'Student') {
+                  errorDiv.textContent = 'User ID does not exist in Student Database.';
+                } else if (role === 'Faculty') {
+                  errorDiv.textContent = 'User ID does not exist in Faculty Database.';
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+        }
+      });
+
+      updatePlaceholder();
+      checkRoleAndEnableButton();
+    });
+  </script>
+</body>
+
+</html>

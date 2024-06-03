@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../static/output.css">
+    <link rel="shortcut icon" href="../static/Assets/favicon.ico" type="image/x-icon">
+    <style>
+      .alert {
+        background-color: #6ee7b7;
+        color: #064e3b;
+        display: block;
+        position: relative;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>{% include 'header.html' %}</header>
+    <h1>Admin Dashboard</h1>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Name</th>
+          <th>College Name</th>
+          <th>Department Name</th>
+          <th>Role</th>
+          <th>Photo</th>
+          <th>Action</th>
+          <!-- Add more columns as needed -->
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in pending_users %}
+        <tr>
+          <td>{{ user[1] }}</td>
+          <td>{{ user[2] }} {{ user[3] }}</td>
+          <td>{{ user[5] }}</td>
+          <td>{{ user[6] }}</td>
+          <td>{{ user[7] }}</td>
+          <td><img src="{{ user[8] }}" alt="Profile Picture" /></td>
+          <td>
+            <form
+              action="{{ url_for('routes.verify_user', user_id=user[1]) }}"
+              method="post"
+            >
+              <input type="hidden" name="action" value="verify" />
+              <button type="submit">Verify</button>
+            </form>
+            <form
+              action="{{ url_for('routes.verify_user', user_id=user[1]) }}"
+              method="post"
+            >
+              <input type="hidden" name="action" value="not_verify" />
+              <button type="submit">Not Verify</button>
+            </form>
+          </td>
+          <!-- Add more columns as needed -->
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <form action="{{ url_for('routes.logout') }}" method="post">
+      <button type="submit">Log out</button>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %} {% if category ==
+    'Verification' %}
+    <div class="items-center flex alert" role="alert">
+      <span><strong>{{ category }}</strong> {{ message }}</span>
+      <span class="close-btn" onclick="this.parentElement.style.display='none';"
+        >&times;</span
+      >
+    </div>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}
+  </body>
+</html>

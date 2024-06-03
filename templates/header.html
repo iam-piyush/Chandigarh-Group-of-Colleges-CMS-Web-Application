@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="shortcut icon" href="../static/Assets/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="../static/output.css" />
+  <style>
+    /* Add CSS for dropdown menu */
+    .dropdown-menu {
+      display: none;
+    }
+
+    .profile:hover .dropdown-menu {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="py-3 bg-white shadow-sm px-3 max-[500px]:py-2">
+    <div class="flex items-center justify-between max-w-screen-2xl mx-auto">
+      <div class="left">
+        <img src="../static/Assets/logo.webp" alt="" style="width: 130px" />
+      </div>
+      <div class="right flex item-center space-x-4">
+        <div class="relative flex text-left profile">
+          <div class="text-sm font-semibold mr-2 max-[700px]:hidden">
+            <p>{{ fname }} {{ lname }}</p>
+            <p>{{ userid }}</p>
+          </div>
+          <div class="relative inline-block text-left profile">
+            <div>
+              <div class="inline-flex w-full justify-center gap-x-1.5 rounded-md" id="menu-button" aria-expanded="true"
+                aria-haspopup="true">
+                {% if profile_picture %}
+                <div class="rounded-full overflow-auto object-cover w-10 h-10"><img src="{{ profile_picture }}"
+                    alt="User Profile Picture" class="w-10 h-10 aspect-square" />
+                </div>
+                {% else %}
+                <img src="../static/Assets/user.svg" alt="" style="border-radius: 50%; height: 30px;" />
+                {% endif %}
+              </div>
+            </div>
+            <div
+              class="dropdown-menu absolute p-4 max-[500px]:py-2 max-[500px]:px-2 right-0 z-10 w-56 origin-top-right rounded-md bg-white drop-shadow-lg"
+              role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+              <div class="py-1" role="none">
+                <div class="up flex items-center">
+                  <div class="upleft">
+                    {% if profile_picture %}
+                    <div class="rounded-full overflow-auto object-cover w-[40px] h-[40px] mb-[3px]"><img
+                        src="{{ profile_picture }}" alt="User Profile Picture"
+                        class="w-[40px] h-[40px] aspect-square" />
+                    </div>
+                    {% else %}
+                    <img src="../static/Assets/user.svg" alt="" style="
+                      border-radius: 50%;
+                      height: 40px;
+                      width: 40px;
+                      margin-bottom: 3px;
+                    " />
+                    {% endif %}
+                  </div>
+                  <div class="upright ml-2 text-sm">
+                    <p class="font-semibold">{{ fname }} {{ lname }}</p>
+                    <p>{{ designation }}</p>
+                    <p>{{ role }}</p>
+                    <p>{{ semester }} {{ section }}</p>
+                  </div>
+                </div>
+                <div class="down">
+                  <form action="{{ url_for('routes.logout') }}" method="post">
+                    <button type="submit"
+                      class="text-xs mx-auto w-full mt-4 border py-2 rounded-lg transition-colors ease-in-out duration-300 hover:bg-gray-100 hover:border-gray-300">Sign
+                      Out</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </nav>
+</body>
+
+</html>

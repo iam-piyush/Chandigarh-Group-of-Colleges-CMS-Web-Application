@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="shortcut icon"
+      href="../static/Assets/favicon.ico"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="../static/output.css" />
+    <style>
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        z-index: 1;
+        transition: all 0.5s ease-in-out;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <footer
+      class="mt-8 flex items-center justify-between py-4 bg-white px-4 xl:px-64 lg:px-12 sm:px-6 shadow-sm"
+    >
+      <div class="left">
+        <img src="../static/Assets/logo.webp" alt="" style="width: 130px" />
+      </div>
+      <div class="right dropdown">
+        {% if profile_picture %}
+        <img
+          src="{{ profile_picture }}"
+          alt=""
+          style="
+            border-radius: 50%;
+            height: 30px;
+            margin-bottom: 3px;
+            aspect-ratio: 1;
+          "
+        />
+        {% else %}
+        <img
+          src="../static/Assets/user.svg"
+          alt=""
+          style="border-radius: 50%; height: 30px; margin-bottom: 3px"
+        />
+        {% endif %}
+        <div
+          class="dropdown-content right-64 bg-white w-48 h-28 border border-gray-300 rounded-md shadow-md p-2"
+        >
+          <div class="up flex items-center">
+            <div class="upleft">
+              {% if profile_picture %}
+              <img
+                src="{{ profile_picture }}"
+                alt=""
+                style="
+                  border-radius: 50%;
+                  height: 40px;
+                  width: 40px;
+                  margin-bottom: 3px;
+                "
+              />
+              {% else %}
+              <img
+                src="../static/Assets/user.svg"
+                alt=""
+                style="
+                  border-radius: 50%;
+                  height: 40px;
+                  width: 40px;
+                  margin-bottom: 3px;
+                "
+              />
+              {% endif %}
+            </div>
+            <div class="upright ml-2 text-xs">
+              <p class="font-semibold">{{ fname }} {{ lname }}</p>
+              <p>{{ designation }}</p>
+              <p>{{ role }}</p>
+            </div>
+          </div>
+          <div class="down">
+            <form action="{{ url_for('routes.logout') }}" method="post">
+              <button type="submit" class="text-xs mx-auto w-full mt-4 border py-1 rounded-lg transition-colors ease-in-out duration-300 hover:bg-black/80 hover:text-white hover:border-black/80">Sign Out</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

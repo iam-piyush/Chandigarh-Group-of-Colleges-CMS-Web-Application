@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyCGC - Student Sign up</title>
+  <link rel="stylesheet" href="../static/output.css" />
+  <link rel="shortcut icon" href="../static/Assets/favicon.ico" type="image/x-icon" />
+  <style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      width: auto;
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      appearance: none;
+    }
+
+    input[type="date"] {
+      color: #bdbdbd;
+    }
+
+    input[type="file"] {
+      width: 200px;
+    }
+
+    .selected {
+      color: #212121;
+    }
+
+    .error-message {
+      display: block;
+      position: relative;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      cursor: pointer;
+    }
+
+    .left {
+      -webkit-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.05);
+      -moz-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.05);
+      box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.05);
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document
+        .querySelector(".left")
+        .addEventListener("scroll", function () {
+          var container = this;
+          var scrollButton = document.getElementById("scrollButton");
+          var form = document.getElementById("myform");
+
+          var containerBottom = container.getBoundingClientRect().bottom;
+          var formBottom = form.getBoundingClientRect().bottom;
+
+          if (formBottom <= containerBottom) {
+            scrollButton.style.display = "none";
+          } else {
+            scrollButton.style.display = "block";
+          }
+        });
+    });
+  </script>
+</head>
+
+<body class="bg-black overflow-hidden max-[900px]:bg-white">
+  <main class="h-screen w-screen relative flex justify-center">
+    <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-70 max-[900px]:hidden"
+      style="background-image: url('../static/Assets/Hero.webp');"></div>
+    <div class="absolute bottom-0 left-0 w-full">
+      <img src="../static/Assets/HeroOverlay.png" alt="" class="w-full opacity-80 max-[900px]:hidden">
+    </div>
+    <div
+      class="left bg-neutral-50 max-[900px]:bg-white rounded-xl flex flex-col w-[500px] absolute right-0 mr-20 mt-[6%] max-[900px]:right-auto max-[900px]:left-auto max-[900px]:mr-0 max-[520px]:w-[95%] overflow-auto h-[80%] max-[520px]:h-[86%]">
+      <div class="scroll-indicator flex item-center justify-center absolute bottom-8 z-10 right-1/2 left-1/2">
+        <embed src="https://lottie.host/embed/e18fa663-f4c8-4ef6-b2b1-01e654b9be2f/Dz1PjZyKCC.json" type=""
+          class="w-10 h-10 fixed bg-white rounded-full shadow-md" id="scrollButton" />
+      </div>
+      <section class="absolute z-0">
+        <div class="p-8  max-[500px]:p-6">
+          <img loading="lazy" src="../static/Assets/logo.webp" alt="CGC Landran"
+            class="w-[250px] max-[500px]:w-[200px]" />
+          <div class="flex items-center justify-center mt-6 max-[500px]:mt-4">
+            <div class="">
+              <h2 class="text-3xl font-bold leading-tight text-black sm:text-4xl">
+                Student Sign up
+              </h2>
+              <p class="mt-2 text-sm text-gray-600">
+                Already have an account?
+                <a href="{{ url_for('routes.login') }}" title=""
+                  class="font-semibold text-black transition-all duration-200 hover:underline">
+                  Sign in
+                </a>
+              </p>
+              <p class="mt-2 text-sm text-gray-600">
+                Create a faculty account?
+                <a href="{{ url_for('routes.facultysignup') }}" title=""
+                  class="font-semibold text-black transition-all duration-200 hover:underline">
+                  Faculty Sign up
+                </a>
+              </p>
+              <form method="post" action="{{ url_for('routes.studentsignup') }}" class="mt-6 max-[500px]:mt-4"
+                enctype="multipart/form-data" id="myform">
+                <div class="space-y-5">
+                  <div>
+                    <label for="userid" class="text-base font-medium text-gray-900">
+                      Student ID
+                    </label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="number" placeholder="Student ID (Must be your roll number)" id="userid" name="userid"
+                        required />
+                    </div>
+                    <div id="userid-error" class="text-sm text-red-600 font-bold mt-2"></div>
+                  </div>
+                  <div>
+                    <label for="fname" class="text-base font-medium text-gray-900">
+                      First Name
+                    </label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="text" placeholder="Write your first name" id="fname" name="fname" required />
+                    </div>
+                  </div>
+                  <div>
+                    <label for="lname" class="text-base font-medium text-gray-900">
+                      Last Name
+                    </label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="text" placeholder="Write your last name" id="lname" name="lname" />
+                    </div>
+                  </div>
+                  <div>
+                    <label for="dob" class="text-base font-medium text-gray-900">Date of Birth</label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="date" id="dob" name="dob" required />
+                    </div>
+                  </div>
+                  <div>
+                    <label for="email" class="text-base font-medium text-gray-900">College Email Address</label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="email" id="email" name="email" placeholder="Write your college email address"
+                        onchange="validateEmail()" required />
+                    </div>
+                    <span id="email-error" class="text-sm text-red-600 font-bold mt-2 hidden">Please enter a valid
+                      college email address ending with
+                      @cgc.edu.in</span>
+                  </div>
+
+                  <div>
+                    <label for="phonenumber" class="text-base font-medium text-gray-900">Phone Number</label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="text" id="phonenumber" name="phonenumber" placeholder="Write your phone number"
+                        minlength="10"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 10) this.value = this.value.slice(0, 10);"
+                        required />
+                    </div>
+                    <div id="phonenumber-error" class="text-sm text-red-600 font-bold mt-2"></div>
+                  </div>
+                  <div>
+                    <label for="collegename" class="text-base font-medium text-gray-900">
+                      College Name
+                    </label>
+                    <div class="mt-2">
+                      <select id="collegename" name="collegename"
+                        class="rounded-md border-gray-300 text-gray-400 w-full text-sm" required>
+                        <option>Select your college</option>
+                        <option value="Chandigarh Engineering College">
+                          Chandigarh Engineering College
+                        </option>
+                        <option value="Chandigarh College of Technology">
+                          Chandigarh College of Technology
+                        </option>
+                        <option value="Chandigarh College of Pharmacy">
+                          Chandigarh College of Pharmacy
+                        </option>
+                        <option value="Chandigarh Business School of Administration">
+                          Chandigarh Business School of Administration
+                        </option>
+                        <option value="Chandigarh College of Hospitality">
+                          Chandigarh College of Hospitality
+                        </option>
+                        <option value="Chandigarh College of Education">
+                          Chandigarh College of Education
+                        </option>
+                        <option value="Chandigarh College of Hotel Management and Catering
+                          Technology">
+                          Chandigarh College of Hotel Management and Catering
+                          Technology
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="departmentname" class="text-base font-medium text-gray-900">
+                      Department Name
+                    </label>
+                    <div class="mt-2">
+                      <select id="departmentname" name="departmentname"
+                        class="rounded-md border-gray-300 text-gray-400 w-full text-sm" required>
+                        <option>Select your department</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="hidden" id="forLEET">
+                    <label for="leetStudent" class="text-base font-medium text-gray-900">
+                      Are you a LEET student?
+                    </label>
+                    <div class="mt-2 flex item-center">
+                      <div>
+                        <input type="radio" id="leetYes" name="leetStudent" value="yes">
+                        <label for="leetYes">Yes</label>
+                      </div>
+                      <div class="ml-6">
+                        <input type="radio" id="leetNo" name="leetStudent" value="no">
+                        <label for="leetNo">No</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="batchyear" class="text-base font-medium text-gray-900">
+                      Batch Year
+                    </label>
+                    <div class="flex items-center mt-2">
+                      <input id="startYear" name="startYear" type="number" placeholder="e.g. 2021"
+                        class="w-1/2 text-sm mr-2 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        required>
+                      </select>
+                      <span class="text-gray-600 font-medium">-</span>
+                      <select id="endYear" name="endYear"
+                        class="w-1/2 text-sm ml-2 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        required>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="semester" class="text-base font-medium text-gray-900">
+                      Semester
+                    </label>
+                    <div class="mt-2">
+                      <select id="semester" name="semester"
+                        class="rounded-md border-gray-300 text-gray-400 w-full text-sm">
+                        <option>Select your semester</option>
+                        <option value="1st">1st</option>
+                        <option value="2nd">2nd</option>
+                        <option value="3rd">3rd</option>
+                        <option value="4th">4th</option>
+                        <option value="5th">5th</option>
+                        <option value="6th">6th</option>
+                        <option value="7th">7th</option>
+                        <option value="8th">8th</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="section" class="text-base font-medium text-gray-900">
+                      Section
+                    </label>
+                    <div class="mt-2">
+                      <select id="section" name="section"
+                        class="rounded-md border-gray-300 text-gray-400 w-full text-sm">
+                        <option>Select your Section</option>
+                        <option value="A1">A1</option>
+                        <option value="A2">A2</option>
+                        <option value="B1">B1</option>
+                        <option value="B2">B2</option>
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                        <option value="D1">D1</option>
+                        <option value="D2">D2</option>
+                        <option value="E1">E1</option>
+                        <option value="E2">E2</option>
+                        <option value="F1">F1</option>
+                        <option value="F2">F2</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="profilepicture" class="text-base font-medium text-gray-900">
+                      Profile Picture
+                    </label>
+                    <div class="mt-2">
+                      <div
+                        class="text-center rounded-md border border-gray-300 py-2 flex flex-col justify-center items-center">
+                        <img loading="lazy" src="../static/Assets/img icon.svg" alt="" style="
+                              height: 100px;
+                              margin-left: auto;
+                              margin-right: auto;
+                            " />
+                        <div class="mt-4 text-sm leading-6 text-gray-600 flex justify-center items-center">
+                          <label for="file-upload" class="flex flex-col items-center"
+                            style="color: #3949ab; font-weight: bold">
+                            <input id="profilepicture" name="profilepicture" type="file" accept=".jpg, .jpeg, .png"
+                              onchange="checkFileSize(this)" required />
+                          </label>
+                        </div>
+                        <p class="text-xs leading-5 text-gray-600">
+                          PNG, JPG, JPEG up to 2MB
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <label for="password" class="text-base font-medium text-gray-900">
+                        Password
+                      </label>
+                    </div>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="password" placeholder="Password" id="password" name="password" required />
+                    </div>
+                  </div>
+                  {% with messages =
+                  get_flashed_messages(with_categories=true) %} {% if messages
+                  %} {% for category, message in messages %} {% if category ==
+                  'error' or category == 'alert' %}
+                  <div
+                    class="error-message items-center flex {% if category == 'error' %} bg-red-100 {% elif category == 'alert' %} bg-yellow-200 {% endif %}"
+                    role="alert">
+                    <strong>{{ category }}</strong> {{ message }}
+                    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                  </div>
+                  {% endif %} {% endfor %} {% endif %} {% endwith %}
+                  <div>
+                    <button type="submit" value="Log In" id="submit-button"
+                      class="inline-flex w-full items-center justify-center rounded-md bg-black py-2.5 font-semibold leading-7 text-white transition ease-in-out delay-100 hover:bg-black/80">
+                      Create Account
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="ml-2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <a href="{{ url_for('routes.team') }}" class="inline-block items-center">
+                <div class="flex items-center mt-2">
+                  <img loading="lazy" src="../static/Assets/developer.svg" alt="" style="height: 15px" />
+                  <p class="text-gray-400 text-sm ml-1.5">Developer Team</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    submitButton = document.getElementById("submit-button");
+
+
+    // For LEET
+    document.addEventListener("DOMContentLoaded", function () {
+      const departmentSelect = document.getElementById("departmentname");
+      const leetDiv = document.getElementById("forLEET");
+      const leetYesRadio = document.getElementById("leetYes");
+      const leetNoRadio = document.getElementById("leetNo");
+      const leetRadios = document.querySelectorAll('input[name="leetStudent"]');
+      const startYearSelect = document.getElementById('startYear');
+
+      departmentSelect.addEventListener("change", function () {
+        const selectedDepartment = departmentSelect.value;
+        if (
+          selectedDepartment === "Computer Science Engineering" ||
+          selectedDepartment === "Electronics and Communication Engineering" ||
+          selectedDepartment === "Mechanical Engineering" ||
+          selectedDepartment === "Information Technology"
+        ) {
+          leetDiv.classList.remove("hidden");
+          leetRadios.forEach(radio => radio.setAttribute('required', 'required'));
+        } else {
+          leetDiv.classList.add("hidden");
+          leetRadios.forEach(radio => radio.removeAttribute('required'));
+        }
+      });
+      leetYesRadio.addEventListener('change', populateYears);
+      leetNoRadio.addEventListener('change', populateYears);
+      startYearSelect.addEventListener('change', populateYears);
+
+      populateYears();
+    });
+
+
+
+    function checkFileSize(input) {
+      let fileSize = input.files[0].size;
+      let maxSize = 2 * 1024 * 1024;
+
+      if (fileSize > maxSize) {
+        alert(
+          "File size exceeds the limit (2 MB). Please select a smaller file."
+        );
+        input.value = "";
+      }
+    }
+
+    document
+      .getElementById("collegename")
+      .addEventListener("change", function () {
+        let selectedOption = this.options[this.selectedIndex];
+        if (selectedOption) {
+          if (selectedOption.value !== "") {
+            this.classList.add("selected");
+          } else {
+            this.classList.remove("selected");
+          }
+        }
+      });
+
+    document
+      .getElementById("departmentname")
+      .addEventListener("change", function () {
+        let selectedOption = this.options[this.selectedIndex];
+        if (selectedOption) {
+          if (selectedOption.value !== "") {
+            this.classList.add("selected");
+          } else {
+            this.classList.remove("selected");
+          }
+        }
+      });
+
+    document.getElementById("userid").addEventListener("input", function () {
+      var userid = this.value;
+      var errorElement = document.getElementById("userid-error");
+      errorElement.innerText = "";
+      if (userid.trim() === "") {
+        errorElement.innerText = "";
+        return;
+      }
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4) {
+          if (this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            if (response.exists) {
+              errorElement.innerText =
+                "Student ID already exists. Please use another.";
+              submitButton.disabled = true;
+            } else {
+              errorElement.innerText = "";
+              submitButton.disabled = false;
+            }
+          } else {
+            console.error("Error:", this.status);
+          }
+        }
+      };
+      xhttp.open("POST", "{{ url_for('routes.check_userid') }}", true);
+      xhttp.setRequestHeader(
+        "Content-type",
+        "application/x-www-form-urlencoded"
+      );
+      xhttp.send("userid=" + userid);
+    });
+
+
+    document.getElementById("phonenumber").addEventListener("input", function () {
+      var phonenumber = this.value;
+      var errorElement = document.getElementById("phonenumber-error");
+      errorElement.innerText = "";
+      if (phonenumber.trim() === "") {
+        errorElement.innerText = "";
+        return;
+      }
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4) {
+          if (this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            if (response.exists) {
+              errorElement.innerText =
+                "Phone number already exists. Please use another.";
+              submitButton.disabled = true;
+            } else {
+              errorElement.innerText = "";
+              submitButton.disabled = false;
+            }
+          } else {
+            console.error("Error:", this.status);
+          }
+        }
+      };
+      xhttp.open("POST", "{{ url_for('routes.check_phonenumber') }}", true);
+      xhttp.setRequestHeader(
+        "Content-type",
+        "application/x-www-form-urlencoded"
+      );
+      xhttp.send("phonenumber=" + phonenumber);
+    });
+
+    document
+      .getElementById("semester")
+      .addEventListener("change", function () {
+        let selectedOption = this.options[this.selectedIndex];
+        if (selectedOption) {
+          if (selectedOption.value !== "") {
+            this.classList.add("selected");
+          } else {
+            this.classList.remove("selected");
+          }
+        }
+      });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      populateDepartmentDropdown();
+    });
+
+    function populateDepartmentDropdown() {
+      let selectedCollege = document.getElementById("collegename").value;
+      let departmentDropdown = document.getElementById("departmentname");
+      departmentDropdown.innerHTML = "<option value=''>Select your department</option>";
+
+      let departments = {
+        "Chandigarh Engineering College": [
+          "Computer Science Engineering",
+          "Electronics and Communication Engineering",
+          "Mechanical Engineering",
+          "Applied Science",
+        ],
+        "Chandigarh College of Technology": [
+          "Computer Science Engineering",
+          "Electronics and Communication Engineering",
+          "Mechanical Engineering",
+          "Applied Science",
+        ],
+        "Chandigarh College of Pharmacy": [
+          // Departments f
+        ],
+        "Chandigarh Business School of Administration": [
+          // Departments 
+        ],
+
+      };
+
+      if (selectedCollege in departments) {
+        departments[selectedCollege].forEach(function (department) {
+          let option = document.createElement("option");
+          option.text = department;
+          option.value = department;
+          departmentDropdown.appendChild(option);
+        });
+      }
+    }
+
+    document.getElementById("collegename").addEventListener("change", function () {
+      populateDepartmentDropdown();
+    });
+
+    function validateEmail() {
+      const emailInput = document.getElementById("email");
+      const emailError = document.getElementById("email-error");
+
+      const emailRegex = /^[^\s@]+@cgc\.edu\.in$/;
+
+      if (!emailRegex.test(emailInput.value)) {
+        emailError.classList.remove("hidden");
+        emailInput.classList.add("border-red-500");
+        submitButton.disabled = true;
+      } else {
+        emailError.classList.add("hidden");
+        emailInput.classList.remove("border-red-500");
+        submitButton.disabled = false;
+      }
+    }
+
+    function populateYears() {
+      const startYearSelect = document.getElementById('startYear');
+      const endYearSelect = document.getElementById('endYear');
+      const leetYesRadio = document.getElementById('leetYes');
+      endYearSelect.innerHTML = '';
+
+      const selectedStartYear = parseInt(startYearSelect.value);
+      let yearsToAdd = 7;
+
+      if (leetYesRadio.checked) {
+        yearsToAdd = 3;
+      }
+
+      for (let year = selectedStartYear + 1; year <= selectedStartYear + yearsToAdd; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        endYearSelect.appendChild(option);
+      }
+    }
+    document.getElementById('startYear').addEventListener('change', populateYears);
+    populateYears();
+
+
+    document.addEventListener('DOMContentLoaded', populateYears);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../static/output.css">
+  <link rel="shortcut icon" href="../static/Assets/favicon.ico" type="image/x-icon">
+  <title>{{ fname }} {{ lname }} - MyCGC</title>
+</head>
+<style>
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 20;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 3% auto;
+    border: 1px solid #888;
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: calc(100% - 6%);
+  }
+
+  .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+  }
+
+  @media screen and (max-width: 700px) {
+    .tables table th:nth-child(2) {
+      min-width: 300px;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+    .tables table th:nth-child(n + 3) {
+      min-width: 140px;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+
+    #studentTableForNotes,
+    #studentTableForMSTPapers,
+    #studentTableForPreviousPapers th:nth-child(3) {
+      min-width: 250px;
+    }
+
+    #studentTableForNotes,
+    #studentTableForMSTPapers,
+    #studentTableForPreviousPapers th:not(:nth-child(3)) {
+      min-width: 80px;
+    }
+  }
+
+  .panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 1s ease-in-out, padding 1s ease-in-out;
+  }
+
+  .panel.show {
+    max-height: 10000px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+</style>
+
+<body>
+  <header>{% include 'header.html' %}</header>
+  <main
+    class="min-[1148px]:mt-4 flex justify-between max-w-screen-2xl mx-auto mb-20 max-[1148px]:flex-col">
+    <div class="left w-full min-[1148px]:w-2/3">
+      <div class="HeroIntro w-full min-[1148px] rounded-lg overflow-hidden pb-6 border bg-white">
+        <div class="relative">
+          <div>
+            <img loading="lazy" alt="departmentImage" id="departmentImage" class="w-full object-cover max-h-[300px]" />
+          </div>
+
+          <div
+            class="mdForBanner:w-40 mdForBanner:h-40 smForBanner:w-32 smForBanner:h-32 w-24 h-24 rounded-full border-4 border-white absolute smForBanner:-bottom-16 smForBanner:ml-8 ml-3 -bottom-12 overflow-hidden object-cover">
+            <img src="{{ profile_picture }}" alt="Profile Picture"
+              class="aspect-square mdForBanner:w-40 mdForBanner:h-40 smForBanner:w-32 smForBanner:h-32 w-24 h-24" />
+          </div>
+        </div>
+
+        <div
+          class="Intro smForBanner:mx-8 mx-3 mdForBanner:mt-[8%] smForBanner:mt-[10%] xsForBanner:mt-[9%] mt-[13%] max-[488px] text-sm">
+          <div class="flex justify-between">
+            <div>
+              <div class="name flex items-center">
+                <p class="text-lg font-semibold">{{ fname }} {{ lname }}</p>
+                <p class="ml-1 text-sm">(User ID: {{ userid }})</p>
+              </div>
+              <p>{{ collegename }}</p>
+              <p>{{ departmentname }}</p>
+              <p>{{ semester }} Semester ({{ section }}), <span id="ifLEET"></span>{{ batch }}</p>
+              <p id="todayDateForAttendance"></p>
+            </div>
+            <div
+              class="flex items-center justify-center rounded-full -mt-2 w-10 h-10 max-[488px] w-5 max-[488px] h-5 transition-colors ease-in-out duration-150 hover:bg-gray-200 edit-profile-icon hover:cursor-pointer max-[488px] hover:bg-white"
+              onclick="openProfileModal()">
+              <img loading="lazy" src="../static/Assets/edit.svg" alt="Edit Profile" class="w-5 h-5" />
+            </div>
+          </div>
+
+          <div class="Buttons mt-4 text-sm flex items-center select-none overflow-x-auto whitespace-nowrap">
+            <div id="AnnouncementButton" class="bg-gray-100 px-4 py-3 rounded-lg border cursor-pointer mr-4">
+              <p class="text-blue-700 font-semibold hover:underline cursor-pointer">
+                Make an announcement
+              </p>
+            </div>
+
+            <div id="AnnouncementButton" class="bg-gray-100 px-4 py-3 rounded-lg border cursor-pointer mr-4 md:hidden">
+              <p class="text-blue-700 font-semibold hover:underline cursor-pointer">
+                Show all announcements
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2">
+        <div class="border bg-white min-[1148px]:rounded-lg overflow-hidden">
+          <div class="accordion">
+            <div class="accordion-item py-2 smForBanner:px-8 px-3">
+              <button
+                class="accordion-header py-2 flex justify-between items-center w-full text-left text-md focus:outline-none">
+                Attendances
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="accordion-content">
+                <div id="subjectList" class="mt-2 max-[500px]:text-sm select-none"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2">
+        <div class="border bg-white min-[1148px]:rounded-lg overflow-hidden ">
+          <div class="accordion">
+            <div class="accordion-item py-2 smForBanner:px-8 px-3">
+              <button id="assignmentBtn"
+                class="accordion-header py-2 flex justify-between items-center w-full text-left text-md focus:outline-none">
+                Assignments
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="accordion-content overflow-auto">
+                <div class="tables" id="subjectTableContainerAssignment"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2">
+        <div class="border bg-white min-[1148px]:rounded-lg overflow-hidden ">
+          <div class="accordion">
+            <div class="accordion-item py-2 smForBanner:px-8 px-3">
+              <button id="mstMarksBtn"
+                class="accordion-header py-2 flex justify-between items-center w-full text-left text-md focus:outline-none">
+                MST Marks
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="accordion-content overflow-auto">
+                <div class="tables" id="subjectTableContainer"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2">
+        <div class="border bg-white min-[1148px]:rounded-lg overflow-hidden">
+          <div class="accordion">
+            <div class="accordion-item py-2 smForBanner:px-8 px-3">
+              <button
+                class="accordion-header py-2 flex justify-between items-center w-full text-left text-md focus:outline-none"
+                id="notesBtn">
+                Study Material
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="accordion-content">
+                <div id="subjectListForNotes" class="mt-2 max-[500px]:text-sm select-none"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2">
+        <div class="border bg-white min-[1148px]:rounded-lg overflow-hidden">
+          <div class="accordion">
+            <div class="accordion-item py-2 smForBanner:px-8 px-3">
+              <button
+                class="accordion-header py-2 flex justify-between items-center w-full text-left text-md focus:outline-none"
+                id="mstPapersBtn">
+                MST Papers
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="accordion-content">
+                <div id="subjectListForMSTpapers" class="mt-2 max-[500px]:text-sm select-none"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-2">
+        <div class="border bg-white min-[1148px]:rounded-lg overflow-hidden">
+          <div class="accordion">
+            <div class="accordion-item py-2 smForBanner:px-8 px-3">
+              <button
+                class="accordion-header py-2 flex justify-between items-center w-full text-left text-md focus:outline-none"
+                id="previousPapersBtn">
+                Previous Year Papers
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+              <div class="accordion-content">
+                <div id="subjectListForPreviouspapers" class="mt-2 max-[500px]:text-sm select-none"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="attendanceModal" class="modal bg-[#f4f2ee]">
+      <div
+        class="modal-content border-gray-200 w-[850px] max-[1000px]:w-[900px] max-[915px]:w-full max-[915px]:mt-0 max-[915px]:rounded-none">
+        <div id="attendanceTableContainer"></div>
+      </div>
+    </div>
+    <div id="notesModal" class="modal bg-[#f4f2ee]">
+      <div
+        class="modal-content border-gray-200 w-[850px] max-[1000px]:w-[900px] max-[915px]:w-full max-[915px]:mt-0 max-[915px]:rounded-none">
+        <div class="">
+          <div class="p-2 flex justify-between border-b">
+            <div class="flex item-center bg-[#EDF3F7] px-4 rounded-lg">
+              <div class="my-auto">
+                <img src="../static/Assets/search.png" class="min-w-4 h-4" alt="">
+              </div>
+              <input type="text" id="searchInput" placeholder="Search..."
+                class="border-none bg-transparent w-36 max-[500px]:w-24 max-[400px]:text-xs max-[400px]:w-16 max-[300px]:w-12 mr-auto my-auto h-10 text-sm focus:outline-none focus:ring-0">
+            </div>
+            <div
+              class="ml-4 flex items-center justify-center rounded-full border border-transparent w-10 h-10 transition-all ease-in-out duration-150 hover:bg-red-100 hover:cursor-pointer hover:border-red-300"
+              onclick="closeNotesModal()">
+              <img loading="lazy" src="../static/Assets/close.png" class="h-5 min-w-5" alt="Close CCSection" />
+            </div>
+          </div>
+          <div class="overflow-auto">
+            <table class="table-auto w-full select-none" id="studentTableForNotes">
+              <thead>
+                <tr class="h-14 border-b">
+                  <th class="font-semibold bg-gray-100 border-r">S.No.</th>
+                  <th class="font-semibold bg-gray-100 border-r">File ID</th>
+                  <th class="font-semibold bg-gray-100 border-r">Name</th>
+                  <th class="font-semibold bg-gray-100">Download</th>
+                </tr>
+              </thead>
+              <tbody class="text-center text-sm" id="notesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="MSTPapersModal" class="modal bg-[#f4f2ee]">
+      <div
+        class="modal-content border-gray-200 w-[850px] max-[1000px]:w-[900px] max-[915px]:w-full max-[915px]:mt-0 max-[915px]:rounded-none">
+        <div class="">
+          <div class="p-2 flex justify-between border-b">
+            <div class="flex item-center bg-[#EDF3F7] px-4 rounded-lg">
+              <div class="my-auto">
+                <img src="../static/Assets/search.png" class="min-w-4 h-4" alt="">
+              </div>
+              <input type="text" id="searchInputMSTPapers" placeholder="Search..."
+                class="border-none bg-transparent w-36 max-[500px]:w-24 max-[400px]:text-xs max-[400px]:w-16 max-[300px]:w-12 mr-auto my-auto h-10 text-sm focus:outline-none focus:ring-0">
+            </div>
+            <div
+              class="ml-4 flex items-center justify-center rounded-full border border-transparent w-10 h-10 transition-all ease-in-out duration-150 hover:bg-red-100 hover:cursor-pointer hover:border-red-300"
+              onclick="closeMSTPapersModal()">
+              <img loading="lazy" src="../static/Assets/close.png" class="h-5 min-w-5" alt="Close CCSection" />
+            </div>
+          </div>
+          <div class="overflow-auto">
+            <table class="table-auto w-full select-none" id="studentTableForMSTPapers">
+              <thead>
+                <tr class="h-14 border-b">
+                  <th class="font-semibold bg-gray-100 border-r">S.No.</th>
+                  <th class="font-semibold bg-gray-100 border-r">File ID</th>
+                  <th class="font-semibold bg-gray-100 border-r">Name</th>
+                  <th class="font-semibold bg-gray-100">Download</th>
+                </tr>
+              </thead>
+              <tbody class="text-center text-sm" id="mstPapersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="PreviousPapersModal" class="modal bg-[#f4f2ee]">
+      <div
+        class="modal-content border-gray-200 w-[850px] max-[1000px]:w-[900px] max-[915px]:w-full max-[915px]:mt-0 max-[915px]:rounded-none">
+        <div class="">
+          <div class="p-2 flex justify-between border-b">
+            <div class="flex item-center bg-[#EDF3F7] px-4 rounded-lg">
+              <div class="my-auto">
+                <img src="../static/Assets/search.png" class="min-w-4 h-4" alt="">
+              </div>
+              <input type="text" id="searchInputPreviousPapers" placeholder="Search..."
+                class="border-none bg-transparent w-36 max-[500px]:w-24 max-[400px]:text-xs max-[400px]:w-16 max-[300px]:w-12 mr-auto my-auto h-10 text-sm focus:outline-none focus:ring-0">
+            </div>
+            <div
+              class="ml-4 flex items-center justify-center rounded-full border border-transparent w-10 h-10 transition-all ease-in-out duration-150 hover:bg-red-100 hover:cursor-pointer hover:border-red-300"
+              onclick="closePreviousPapersModal()">
+              <img loading="lazy" src="../static/Assets/close.png" class="h-5 min-w-5" alt="Close CCSection" />
+            </div>
+          </div>
+          <div class="overflow-auto">
+            <table class="table-auto w-full select-none" id="studentTableForPreviousPapers">
+              <thead>
+                <tr class="h-14 border-b">
+                  <th class="font-semibold bg-gray-100 border-r">S.No.</th>
+                  <th class="font-semibold bg-gray-100 border-r">File ID</th>
+                  <th class="font-semibold bg-gray-100 border-r">Name</th>
+                  <th class="font-semibold bg-gray-100">Download</th>
+                </tr>
+              </thead>
+              <tbody class="text-center text-sm" id="previousPapersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="announcementModal" class="modal hidden bg-[#f4f2ee]">
+      <div
+        class="modal-content border-gray-200 w-[850px] max-[1000px]:w-[900px] max-[915px]:w-full max-[915px]:mt-0 max-[915px]:rounded-none p-4">
+        <div class="flex justify-between items-center pb-2 mb-4 border-b">
+          <h2 class="text-lg font-semibold">Make Announcement</h2>
+          <div
+            class="close-modal flex items-center justify-center rounded-full h-10 w-10 border border-transparent transition-all ease-in-out duration-150 hover:bg-red-100 hover:cursor-pointer hover:border-red-300"
+            onclick="closeAnnouncementModal()">
+            <img loading="lazy" src="../static/Assets/close.png" class="h-5 w-5" alt="Close Modal" />
+          </div>
+        </div>
+        <form id="announcementForm" enctype="multipart/form-data">
+          <div class="space-y-4 mt-4">
+            <div>
+              <label for="title" class="text-base font-medium text-gray-900">Title</label>
+              <input type="text" id="title" name="title" class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md"
+                required>
+            </div>
+            <div>
+              <label for="organising_club" class="text-base font-medium text-gray-900">Organising Club</label>
+              <input type="text" id="organising_club" name="organising_club"
+                class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md" required>
+            </div>
+            <div>
+              <label for="registration_link" class="text-base font-medium text-gray-900">Registration Link</label>
+              <input type="text" id="registration_link" name="registration_link"
+                class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md" required>
+            </div>
+            <div>
+              <label for="event_date" class="text-base font-medium text-gray-900">Event Date</label>
+              <input type="date" id="event_date" name="event_date"
+                class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md" required>
+            </div>
+            <div>
+              <label for="banner" class="text-base font-medium text-gray-900">Banner Image</label>
+              <input type="file" id="banner" name="banner" class="w-full mt-2" accept="image/*" required>
+              <div id="fileSizeError" class="text-red-600 text-sm hidden">File size exceeds 5MB. Please choose a smaller
+                file.</div>
+            </div>
+            <div>
+              <label for="description" class="text-base font-medium text-gray-900">Description</label>
+              <textarea id="description" name="description"
+                class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md" rows="4" required></textarea>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <input type="hidden" id="fname" name="fname">
+                <input type="hidden" id="lname" name="lname">
+                <input type="hidden" id="userid" name="userid">
+                <p id="authorInfo" class="text-sm text-gray-600"></p>
+              </div>
+              <div>
+                <button id="publishButton" type="submit"
+                  class="px-4 py-2 bg-[#0a66c2] text-white rounded-full transition-colors duration-300 ease-in hover:bg-[#004182]">Publish</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+
+    <div
+      class="right ml-2 w-2/6 max-h-[1445px] space-y-2 overflow-auto max-[1148px]:mt-2 max-[1148px]:w-full max-[1148px]:ml-0 max-[1148px]:rounded-none">
+      <h2 class="font-semibold bg-white rounded-lg max-[1148px]:rounded-none border text-lg text-center py-4 max-[1148px]:text-left smForBanner:px-8 max-[580px]:px-3">
+        Announcements</h2>
+      <div id="announcements"></div>
+    </div>
+
+    <!--------------------------- Update Profile Details --------------------------->
+    <div id="editModal" class="modal drop-shadow-lg">
+      <div class="modal-content py-4 w-[40%] max-[1000px]:w-[65%] max-[640px]:w-[80%] max-[500px]:w-[95%]">
+        <div class="modalUp flex items-center justify-between border-b pb-2 px-8">
+          <h2 class="text-lg font-semibold">Update Profile</h2>
+          <div
+            class="close flex items-center justify-center rounded-full h-10 w-10 border border-transparent transition-all ease-in-out duration-150 hover:bg-red-100 hover:cursor-pointer hover:border-red-300"
+            onclick="closeModal()">
+            <img loading="lazy" src="../static/Assets/close.png" class="h-5 w-5" alt="Close CCSection" />
+          </div>
+        </div>
+        <form id="updateForm" method="post" action="{{ url_for('routes.update_student') }}" class="">
+          <div class="space-y-4 px-8 pt-4 pb-8 border-b">
+            <div>
+              <label for="userid" class="text-base font-medium text-gray-900">User ID</label>
+              <div class="mt-2">
+                <input
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  type="text" id="userid" name="userid" value="{{ userid }}" />
+              </div>
+            </div>
+            <div>
+              <label for="fname" class="text-base font-medium text-gray-900">First Name</label>
+              <div class="mt-2">
+                <input
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  type="text" id="fname" name="fname" value="{{ fname }}" />
+              </div>
+            </div>
+            <div>
+              <label for="lname" class="text-base font-medium text-gray-900">Last Name</label>
+              <div class="mt-2">
+                <input
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  type="text" id="lname" name="lname" value="{{ lname }}" />
+              </div>
+            </div>
+            <div>
+              <label for="dob" class="text-base font-medium text-gray-900">Date of Birth</label>
+              <div class="mt-2">
+                <input
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  type="date" id="dob" name="dob" required value="{{ dob|safe }}" />
+              </div>
+            </div>
+            <div>
+              <label for="email" class="text-base font-medium text-gray-900">College Email Address</label>
+              <div class="mt-2">
+                <input
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  type="email" id="email" name="email" placeholder="Write your college email address"
+                  onchange="validateEmail()" required value="{{ email }}" />
+              </div>
+              <span id="email-error" class="text-sm text-red-600 font-bold mt-2 hidden">Please enter a valid
+                college email address ending with
+                @cgc.edu.in</span>
+            </div>
+            <div>
+              <label for="phonenumber" class="text-base font-medium text-gray-900">Phone Number</label>
+              <div class="mt-2">
+                <input
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  type="text" id="phonenumber" name="phonenumber" placeholder="Write your phone number" minlength="10"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 10) this.value = this.value.slice(0, 10);"
+                  required value="{{ phonenumber }}" />
+              </div>
+            </div>
+            <div>
+              <label for="collegename" class="text-base font-medium text-gray-900">College</label>
+              <div class="mt-2">
+                <select id="collegename" name="collegename" class="rounded-md text-gray-900 w-full text-sm">
+                  <option>{{ collegename }}</option>
+                  <option value="Chandigarh Engineering College">
+                    Chandigarh Engineering College
+                  </option>
+                  <option value="Chandigarh College of Technology">
+                    Chandigarh College of Technology
+                  </option>
+                  <option value="Chandigarh College of Pharmacy">
+                    Chandigarh College of Pharmacy
+                  </option>
+                  <option value="Chandigarh Business School of Administration">
+                    Chandigarh Business School of Administration
+                  </option>
+                  <option value="Chandigarh College of Hospitality">
+                    Chandigarh College of Hospitality
+                  </option>
+                  <option value="Chandigarh College of Education">
+                    Chandigarh College of Education
+                  </option>
+                  <option value="Chandigarh College of Hotel Management and Catering Technology">
+                    Chandigarh College of Hotel Management and Catering
+                    Technology
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div id="departmentSection">
+              <label for="departmentname" class="text-base font-medium text-gray-900">Department</label>
+              <div class="mt-2">
+                <select
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  id="departmentname" name="departmentname" class="rounded-md text-gray-900 w-full">
+                  <input type="hidden" id="currentDepartment" name="currentDepartment" value="{{ departmentname }}">
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="semester" class="text-base font-medium text-gray-900">Semester</label>
+              <div class="mt-2">
+                <select
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  id="semester" name="semester" class="rounded-md text-gray-900 w-full">
+                  <option>{{ semester }}</option>
+                  <option value="1st">1st</option>
+                  <option value="2nd">2nd</option>
+                  <option value="3rd">3rd</option>
+                  <option value="4th">4th</option>
+                  <option value="5th">5th</option>
+                  <option value="6th">6th</option>
+                  <option value="7th">7th</option>
+                  <option value="8th">8th</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="section" class="text-base font-medium text-gray-900">Section</label>
+              <div class="mt-2">
+                <select
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  id="section" name="section" class="rounded-md text-gray-900 w-full">
+                  <option>{{ section }}</option>
+                  <option value="A1">A1</option>
+                  <option value="A2">A2</option>
+                  <option value="B1">B1</option>
+                  <option value="B2">B2</option>
+                  <option value="C1">C1</option>
+                  <option value="C2">C2</option>
+                  <option value="D1">D1</option>
+                  <option value="D2">D2</option>
+                  <option value="E1">E1</option>
+                  <option value="E2">E2</option>
+                  <option value="F1">F1</option>
+                  <option value="F2">F2</option>
+                </select>
+              </div>
+            </div>
+            <div id="forLEET">
+              <label for="leetStudent" class="text-base font-medium text-gray-900">
+                Are you a LEET student?
+              </label>
+              <div class="mt-2 flex item-center">
+                <div>
+                  <input type="radio" id="leetYes" name="leetStudent" value="yes" {% if LEET=='yes' %} checked {% endif
+                    %}>
+                  <label for="leetYes">Yes</label>
+                </div>
+                <div class="ml-6">
+                  <input type="radio" id="leetNo" name="leetStudent" value="no" {% if LEET=='no' %} checked {% endif %}>
+                  <label for="leetNo">No</label>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label for="batchyear" class="text-base font-medium text-gray-900">
+                Batch Year
+              </label>
+              <div class="flex items-center mt-2">
+                <input id="startYear" name="startYear" type="number" min="1900" max="2099"
+                  class="w-1/2 text-sm mr-2 rounded-md border bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  required>
+                <span class="text-gray-600 font-medium">-</span>
+                <input id="endYear" name="endYear" type="number" min="1900" max="2099"
+                  class="w-1/2 text-sm ml-2 rounded-md border bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  required>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center justify-end">
+            <button type="submit"
+              class="mt-5 mr-8 text-white text-sm px-6 py-2 rounded-full bg-[#0a66c2] transition-colors duration-300 ease-in hover:bg-[#004182]">
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</body>
+<script>
+  //*************************** Date ***************************
+  function formatDate(date) {
+    const options = {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+      weekday: "long",
+    };
+    const formattedDate = date.toLocaleDateString("en-GB", options);
+    const [weekday, dayMonthYear] = formattedDate.split(", ");
+    return `Date: ${dayMonthYear}, ${weekday}`;
+  }
+  function updateDate() {
+    const currentDate = new Date();
+    const formattedDate = formatDate(currentDate);
+    document.getElementById("todayDateForAttendance").textContent = formattedDate;
+  }
+  updateDate();
+
+
+  //*************************** For Department Photo ***************************
+  const departmentImages = {
+    "Computer Science Engineering": "../static/Assets/cse_image.jpg",
+    "Electronics and Communication Engineering":
+      "../static/Assets/DepartmentImages/ece.webp",
+    "Mechanical Engineering": "../static/Assets/mech_image.jpg",
+  };
+
+  const departmentName = "{{ departmentname }}";
+
+  const departmentImage = document.getElementById("departmentImage");
+
+  if (departmentImages.hasOwnProperty(departmentName)) {
+    departmentImage.src = departmentImages[departmentName];
+  } else {
+    departmentImage.src = "path_to_placeholder_image.jpg";
+  }
+
+
+  //****************** For startYear and endYear ******************
+  let batch = "{{ batch }}";
+
+  let batchParts = batch.split('-');
+  let startYear = parseInt(batchParts[0]);
+  let endYear = parseInt(batchParts[1]);
+
+  let LEET = "{{ LEET }}";
+  if (LEET === 'yes') {
+    startYear += 1;
+    document.getElementById("ifLEET").innerHTML = `LEET Student, `;
+  }
+
+  // Populate the startYear and endYear fields
+  document.getElementById('startYear').value = startYear;
+  document.getElementById('endYear').value = endYear;
+
+
+  //*************************** For Department Names According to College Name ***************************
+  document.addEventListener("DOMContentLoaded", function () {
+    populateDepartmentDropdown();
+  });
+
+  function populateDepartmentDropdown() {
+    let selectedCollege = document.getElementById("collegename").value;
+    let departmentDropdown = document.getElementById("departmentname");
+    let currentDepartment = document.getElementById("currentDepartment").value;
+
+    departmentDropdown.innerHTML = "<option value='" + currentDepartment + "'>" + currentDepartment + "</option>";
+
+    let departments = {
+      "Chandigarh Engineering College": [
+        "Computer Science Engineering",
+        "Electronics and Communication Engineering",
+        "Mechanical Engineering",
+        "Applied Science",
+      ],
+      "Chandigarh College of Technology": [
+        "Computer Science Engineering",
+        "Electronics and Communication Engineering",
+        "Mechanical Engineering",
+        "Applied Science",
+      ],
+      "Chandigarh College of Pharmacy": [
+        // Departments f
+      ],
+      "Chandigarh Business School of Administration": [
+        // Departments 
+      ],
+    };
+
+    if (selectedCollege in departments) {
+      departments[selectedCollege].forEach(function (department) {
+        if (department !== currentDepartment) {
+          let option = document.createElement("option");
+          option.text = department;
+          option.value = department;
+          departmentDropdown.appendChild(option);
+        }
+      });
+    }
+  }
+
+
+  document.getElementById("collegename").addEventListener("change", function () {
+    populateDepartmentDropdown();
+  });
+
+
+  //************************************ For profile updating modal ************************************
+  const modal = document.getElementById("editModal");
+
+  function openProfileModal() {
+    modal.style.display = "block";
+  }
+
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+
+  //*********************************** Email Validation *********************************
+  function validateEmail() {
+    const emailInput = document.getElementById("email");
+    const emailError = document.getElementById("email-error");
+
+    const emailRegex = /^[^\s@]+@cgc\.edu\.in$/;
+
+    if (!emailRegex.test(emailInput.value)) {
+      emailError.classList.remove("hidden");
+      emailInput.classList.add("border-red-500");
+    } else {
+      emailError.classList.add("hidden");
+      emailInput.classList.remove("border-red-500");
+    }
+  }
+
+  //*********************************** For Respective Accordion to make fetch request START  *********************************
+  let intervalId;
+  document.addEventListener('DOMContentLoaded', function () {
+    const accordionItems = document.querySelectorAll('.accordion-item');
+
+    accordionItems.forEach(item => {
+      const header = item.querySelector('.accordion-header');
+      const arrowIcon = header.querySelector('svg');
+
+      header.addEventListener('click', () => {
+        const isOpen = item.classList.contains('accordion-item-active');
+
+        accordionItems.forEach(accItem => {
+          accItem.classList.remove('accordion-item-active');
+          accItem.querySelector('.accordion-content').style.maxHeight = 0;
+          accItem.querySelector('svg').style.transform = 'rotate(0deg)';
+          accItem.classList.remove('pb-6');
+        });
+
+        if (isOpen) {
+          item.classList.remove('accordion-item-active');
+          item.querySelector('.accordion-content').style.maxHeight = 0;
+          arrowIcon.style.transform = 'rotate(0deg)';
+          item.classList.remove('pb-6');
+        } else {
+          item.classList.add('accordion-item-active');
+          item.classList.add('pb-6');
+          arrowIcon.style.transform = 'rotate(180deg)';
+
+          const department = "{{ departmentname }}";
+          const semester = "{{ semester }}";
+          const batch = "{{ batch }}";
+
+          if (header.textContent.trim() === 'Attendances') {
+            fetchSubjectsForAttendance(department, semester, batch);
+          } else if (header.textContent.trim() === 'MST Marks') {
+            fetchSubjectsForMST(department, semester, batch);
+          } else if (header.textContent.trim() === 'Assignments') {
+            fetchSubjectsForAssignment(department, semester, batch);
+          } else if (header.textContent.trim() === 'Study Material') {
+            fetchSubjectsForNotes(department, semester, batch).then(() => {
+              item.querySelector('.accordion-content').style.maxHeight = item.querySelector('.accordion-content').scrollHeight + 'px';
+            });
+          } else if (header.textContent.trim() === 'MST Papers') {
+            fetchSubjectsForMSTPapers(department, semester, batch).then(() => {
+              item.querySelector('.accordion-content').style.maxHeight = item.querySelector('.accordion-content').scrollHeight + 'px';
+            });
+          } else if (header.textContent.trim() === 'Previous Year Papers') {
+            fetchSubjectsForPreviousPapers(department, semester, batch).then(() => {
+              item.querySelector('.accordion-content').style.maxHeight = item.querySelector('.accordion-content').scrollHeight + 'px';
+            });
+          } else {
+            item.querySelector('.accordion-content').style.maxHeight = item.querySelector('.accordion-content').scrollHeight + 'px';
+          }
+        }
+      });
+    });
+  });
+
+  function extractNumericSemester(semester) {
+    return semester.match(/\d+/)[0];
+  }
+
+  function fetchSubjectsForAttendance(department, semester, batch) {
+    const numericSemester = extractNumericSemester(semester);
+    const url = `/subjects/${department}/${numericSemester}?batch=${batch}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const subjectList = document.getElementById("subjectList");
+        subjectList.innerHTML = "";
+
+        data.subjects.forEach((subject, index) => {
+          const subjectItem = document.createElement("p");
+          subjectItem.textContent = `${index + 1}. ${subject}`;
+          subjectItem.className = "border-t py-2";
+          subjectItem.addEventListener('click', () => {
+            const rollNumber = "{{ userid }}";
+            getAttendanceData(department, semester, subject, batch, rollNumber);
+          });
+          subjectList.appendChild(subjectItem);
+        });
+
+        const accordionContent = document.querySelector('.accordion-content');
+        accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
+      })
+      .catch(error => console.error("Error loading subjects:", error));
+  }
+
+  function fetchSubjectsForNotes(department, semester, batch) {
+    const numericSemester = extractNumericSemester(semester);
+    const url = `/subjects/${department}/${numericSemester}?batch=${batch}`;
+
+    return fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const subjectListForNotes = document.getElementById("subjectListForNotes");
+        subjectListForNotes.innerHTML = "";
+
+        data.subjects.forEach((subject, index) => {
+          const subjectItemForNotes = document.createElement("p");
+          subjectItemForNotes.textContent = `${index + 1}. ${subject}`;
+          subjectItemForNotes.className = "border-t py-2";
+          subjectItemForNotes.addEventListener('click', () => {
+            getNotesData(subject);
+          });
+          subjectListForNotes.appendChild(subjectItemForNotes);
+        });
+      })
+      .catch(error => console.error("Error loading subjects:", error));
+  }
+
+  function fetchSubjectsForMSTPapers(department, semester, batch) {
+    const numericSemester = extractNumericSemester(semester);
+    const url = `/subjects/${department}/${numericSemester}?batch=${batch}`;
+
+    return fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const subjectListForMSTPapers = document.getElementById("subjectListForMSTpapers");
+        subjectListForMSTPapers.innerHTML = "";
+
+        data.subjects.forEach((subject, index) => {
+          const subjectItemForMSTPapers = document.createElement("p");
+          subjectItemForMSTPapers.textContent = `${index + 1}. ${subject}`;
+          subjectItemForMSTPapers.className = "border-t py-2";
+          subjectItemForMSTPapers.addEventListener('click', () => {
+            getMSTPapersData(subject);
+          });
+          subjectListForMSTPapers.appendChild(subjectItemForMSTPapers);
+        });
+      })
+      .catch(error => console.error("Error loading subjects:", error));
+  }
+
+  function fetchSubjectsForPreviousPapers(department, semester, batch) {
+    const numericSemester = extractNumericSemester(semester);
+    const url = `/subjects/${department}/${numericSemester}?batch=${batch}`;
+
+    return fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const subjectListForPreviousPapers = document.getElementById("subjectListForPreviouspapers");
+        subjectListForPreviousPapers.innerHTML = "";
+
+        data.subjects.forEach((subject, index) => {
+          const subjectItemForPreviousPapers = document.createElement("p");
+          subjectItemForPreviousPapers.textContent = `${index + 1}. ${subject}`;
+          subjectItemForPreviousPapers.className = "border-t py-2";
+          subjectItemForPreviousPapers.addEventListener('click', () => {
+            getPreviousPapersData(subject);
+          });
+          subjectListForPreviousPapers.appendChild(subjectItemForPreviousPapers);
+        });
+      })
+      .catch(error => console.error("Error loading subjects:", error));
+  }
+
+  function getAttendanceData(department, semester, subject, batch, rollNumber) {
+    clearInterval(intervalId);
+
+    const url = `/my_attendances?department=${department}&semester=${semester}&subject=${subject}&batch=${batch}&rollNumber=${rollNumber}`;
+
+    function fetchAttendance() {
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.attendanceData) {
+            generateAttendanceModal(data.attendanceData, subject);
+          }
+        })
+        .catch(error => console.error("Error fetching attendance data:", error));
+    }
+
+    fetchAttendance();
+
+    intervalId = setInterval(fetchAttendance, 1000);
+
+    return intervalId;
+  }
+
+
+  function generateAttendanceModal(attendanceData, subject) {
+    const modal = document.getElementById('attendanceModal');
+    const modalContent = modal.querySelector('.modal-content');
+
+    modalContent.innerHTML = '';
+
+    const heading = document.createElement('div');
+    heading.innerHTML = `<div class="w-full flex items-center justify-between p-2">
+    <div class="flex items-center justify-between"><p class="text-center font-semibold">${subject}, Attendances</p></div>
+    <div class="p-1">
+      <div class="flex items-center justify-center close ml-auto rounded-full h-10 w-10 border border-transparent transition-all ease-in-out duration-150 hover:bg-red-100 hover:cursor-pointer hover:border-red-300" onclick="closeAttendanceModal()">
+        <img loading="lazy" src="../static/Assets/close.png" class="h-5 w-5" alt="Close Modal" />
+      </div>
+    </div>
+  </div>`;
+    modalContent.appendChild(heading);
+
+    const attendanceInfoRow = document.createElement('div');
+    attendanceInfoRow.innerHTML = `
+    <div class="w-full flex flex-col items-center justify-center">
+      <div class="pb-1">
+           The attendance count is <span id="presentCount"></span> out of <span id="totalCount"></span> (<span id="attendancePercentage"></span>%)
+      </div>
+      <div class="w-full bg-gray-200">
+        <div id="attendanceBar" class="bg-green-600 h-2"></div>
+      </div>
+    </div>
+    `;
+    attendanceInfoRow.className = "pt-2 text-center border-t flex items-center justify-center"
+    modalContent.appendChild(attendanceInfoRow);
+
+    const table = document.createElement('table');
+    table.classList.add('attendance-table');
+    table.className = "table-auto w-full text-center"
+
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    headerRow.className = "h-10";
+    const thSNo = document.createElement('th');
+    thSNo.textContent = 'S. No.';
+    thSNo.className = "border-r";
+    const thDate = document.createElement('th');
+    thDate.textContent = 'Date';
+    thDate.className = "border-r";
+    const thAttendance = document.createElement('th');
+    thAttendance.textContent = 'Attendance';
+    headerRow.appendChild(thSNo);
+    headerRow.appendChild(thDate);
+    headerRow.appendChild(thAttendance);
+    thead.appendChild(headerRow);
+
+    const tbody = document.createElement('tbody');
+    const rows = [];
+    let presentCount = 0;
+
+    Object.entries(attendanceData).forEach(([date, status], index) => {
+      const row = document.createElement('tr');
+      row.className = "h-10 border-t";
+      const cellSNo = document.createElement('td');
+      cellSNo.textContent = index + 1;
+      cellSNo.className = "border-r";
+      const cellDate = document.createElement('td');
+      cellDate.textContent = date;
+      cellDate.className = "border-r";
+      const cellAttendance = document.createElement('td');
+      cellAttendance.textContent = status;
+      cellAttendance.style.color = status === 'Present' ? '#43a047' : '#e53935';
+      row.appendChild(cellSNo);
+      row.appendChild(cellDate);
+      row.appendChild(cellAttendance);
+      tbody.appendChild(row);
+      rows.push(row);
+      if (status === 'Present') presentCount++;
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    modalContent.appendChild(table);
+
+    const presentCountElement = document.getElementById('presentCount');
+    const totalCountElement = document.getElementById('totalCount');
+    const attendancePercentageElement = document.getElementById('attendancePercentage');
+    presentCountElement.textContent = presentCount;
+    totalCountElement.textContent = Object.keys(attendanceData).length;
+
+    const attendancePercentage = (presentCount / Object.keys(attendanceData).length) * 100;
+    attendancePercentageElement.textContent = attendancePercentage.toFixed(2);
+
+    const attendanceBar = document.getElementById('attendanceBar');
+    attendanceBar.style.width = attendancePercentage + '%';
+    if (attendancePercentage >= 75) {
+      attendanceBar.classList.add('bg-green-600');
+    } else {
+      attendanceBar.classList.add('bg-red-600');
+    }
+
+    modal.style.display = 'block';
+
+    const closeBtn = modalContent.querySelector('.close');
+
+    if (closeBtn) {
+      closeBtn.onclick = function () {
+        modal.style.display = 'none';
+        clearInterval(intervalId);
+      };
+    }
+
+    window.onclick = function (event) {
+      const modal = document.getElementById('attendanceModal');
+      if (event.target === modal || modal.contains(event.target)) {
+        modal.style.display = 'none';
+        clearInterval(intervalId);
+      }
+    };
+  }
+
+  function closeAttendanceModal() {
+    const modal = document.getElementById('attendanceModal');
+    modal.style.display = 'none';
+    clearInterval(intervalId);
+  }
+
+
+  function closeAttendanceModal() {
+    document.getElementById("attendanceModal").style.display = 'none';
+  }
+
+  //*********************************** Show Attendances End *********************************
+
+  //************************************************************* For MST Marks START *************************************************************
+  function fetchSubjectsForMST(department, semester, batch) {
+    const numericSemester = extractNumericSemester(semester);
+    const url = `/subjects/${department}/${numericSemester}?batch=${batch}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        createSubjectTable(data.subjects);
+        data.subjects.forEach(subject => {
+          fetchMSTMarks(subject)
+            .then(mstMarks => {
+              populateTableWithMSTMarks(mstMarks);
+            })
+            .catch(error => {
+              console.error(`Error fetching MST marks for ${subject}:`, error);
+            });
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }
+
+  function populateTableWithMSTMarks(mstMarks) {
+    const table = document.getElementById("subjectTableForMST");
+    Object.keys(mstMarks).forEach(subject => {
+      const marks = mstMarks[subject];
+      const row = table.querySelector(`tr[data-subject="${subject}"]`);
+      if (row) {
+        const cellMST1 = row.querySelector(".mst1");
+        const cellMST2 = row.querySelector(".mst2");
+
+        if (marks.mst1 && marks.mst1 <= 8) {
+          cellMST1.textContent = marks.mst1;
+          cellMST1.classList.add("bg-red-100");
+        } else {
+          cellMST1.textContent = marks.mst1 || "";
+          cellMST1.classList.remove("bg-red-100");
+        }
+
+        if (marks.mst2 && marks.mst2 <= 8) {
+          cellMST2.textContent = marks.mst2;
+          cellMST2.classList.add("bg-red-100");
+        } else {
+          cellMST2.textContent = marks.mst2 || "";
+          cellMST2.classList.remove("bg-red-100");
+        }
+      }
+    });
+  }
+
+  function createSubjectTable(subjects) {
+    const filteredSubjects = subjects.filter(subject => !/(laboratory|project-1|project-2|lab)/i.test(subject));
+    const container = document.getElementById("subjectTableContainer");
+    container.innerHTML = "";
+    const table = document.createElement("table");
+    table.id = "subjectTableForMST";
+    table.className = "border border-collapse w-full max-[760px]:text-sm";
+
+    const headerRow = table.insertRow();
+    const thSNo = document.createElement("th");
+    thSNo.textContent = "S.No.";
+    thSNo.className = "p-2 border text-center";
+    headerRow.appendChild(thSNo);
+
+    const thSubject = document.createElement("th");
+    thSubject.textContent = "Subjects";
+    thSubject.className = "p-2 border";
+    headerRow.appendChild(thSubject);
+
+    const thMST1 = document.createElement("th");
+    thMST1.textContent = "MST 1";
+    thMST1.className = "p-2 border";
+    headerRow.appendChild(thMST1);
+
+    const thMST2 = document.createElement("th");
+    thMST2.textContent = "MST 2";
+    thMST2.className = "p-2 border";
+    headerRow.appendChild(thMST2);
+
+    filteredSubjects.forEach((subject, index) => {
+      const row = table.insertRow();
+      row.setAttribute("data-subject", subject);
+      const cellSNo = row.insertCell();
+      cellSNo.textContent = index + 1;
+      cellSNo.className = "px-4 py-2 border text-center";
+
+      const cellSubject = row.insertCell();
+      cellSubject.textContent = subject;
+      cellSubject.className = "px-4 py-2 border";
+
+      const cellMST1 = row.insertCell();
+      cellMST1.textContent = "";
+      cellMST1.className = "mst1 px-4 py-2 border text-center";
+
+      const cellMST2 = row.insertCell();
+      cellMST2.textContent = "";
+      cellMST2.className = "mst2 px-4 py-2 border text-center";
+    });
+
+    container.appendChild(table);
+    const accordionContent = container.closest(".accordion-content");
+    accordionContent.style.maxHeight = null;
+    const tableHeight = table.offsetHeight;
+    accordionContent.style.maxHeight = tableHeight + "px";
+  }
+
+  function fetchMSTMarks(subject) {
+    return new Promise((resolve, reject) => {
+      const semester = "{{ semester }}";
+      const batch = "{{ batch }}";
+      const userid = "{{ userid }}";
+      const url = `/my_mst_marks?batch=${batch}&semester=${semester}&subject=${subject}&rollNumber=${userid}`;
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          resolve(data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+  //************************************************************* For MST Marks END *************************************************************
+
+  //************************************************************* For Assignment START *************************************************************
+  function fetchSubjectsForAssignment(department, semester, batch) {
+    const numericSemester = extractNumericSemester(semester);
+    const url = `/subjects/${department}/${numericSemester}?batch=${batch}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        createSubjectTableForAssignment(data.subjects);
+        data.subjects.forEach(subject => {
+          fetchAssignment(subject)
+            .then(Assignment => {
+              populateTableWithAssignment(Assignment);
+            })
+            .catch(error => {
+              console.error(`Error fetching Assignment Status for ${subject}:`, error);
+            });
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }
+
+  function populateTableWithAssignment(Assignment) {
+    const table = document.getElementById("subjectTableForAssignment");
+    Object.keys(Assignment).forEach(subject => {
+      const marks = Assignment[subject];
+      const row = table.querySelector(`tr[data-subject="${subject}"]`);
+      if (row) {
+        const cellAssignment1 = row.querySelector(".assignment1");
+        const cellAssignment2 = row.querySelector(".assignment2");
+
+        if (marks.assignment1 === "Not Submitted") {
+          cellAssignment1.textContent = marks.assignment1;
+          cellAssignment1.classList.add("bg-red-100");
+        } else {
+          cellAssignment1.textContent = marks.assignment1 || "";
+          cellAssignment1.classList.remove("bg-red-100");
+        }
+
+        if (marks.assignment2 === "Not Submitted") {
+          cellAssignment2.textContent = marks.assignment2;
+          cellAssignment2.classList.add("bg-red-100");
+        } else {
+          cellAssignment2.textContent = marks.assignment2 || "";
+          cellAssignment2.classList.remove("bg-red-100");
+        }
+      }
+    });
+  }
+
+  function createSubjectTableForAssignment(subjects) {
+    const filteredSubjects = subjects.filter(subject => !/(laboratory|project-1|project-2|lab)/i.test(subject));
+    const container = document.getElementById("subjectTableContainerAssignment");
+    container.innerHTML = "";
+    const table = document.createElement("table");
+    table.id = "subjectTableForAssignment";
+    table.className = "border border-collapse w-full max-[760px]:text-sm";
+
+    const headerRow = table.insertRow();
+    const thSNo = document.createElement("th");
+    thSNo.textContent = "S.No.";
+    thSNo.className = "p-2 border text-center";
+    headerRow.appendChild(thSNo);
+
+    const thSubject = document.createElement("th");
+    thSubject.textContent = "Subjects";
+    thSubject.className = "p-2 border";
+    headerRow.appendChild(thSubject);
+
+    const thAssignment1 = document.createElement("th");
+    thAssignment1.textContent = "Assignment 1";
+    thAssignment1.className = "p-2 border";
+    headerRow.appendChild(thAssignment1);
+
+    const thAssignment2 = document.createElement("th");
+    thAssignment2.textContent = "Assignment 2";
+    thAssignment2.className = "p-2 border";
+    headerRow.appendChild(thAssignment2);
+
+    filteredSubjects.forEach((subject, index) => {
+      const row = table.insertRow();
+      row.setAttribute("data-subject", subject);
+      const cellSNo = row.insertCell();
+      cellSNo.textContent = index + 1;
+      cellSNo.className = "px-4 py-2 border text-center";
+
+      const cellSubject = row.insertCell();
+      cellSubject.textContent = subject;
+      cellSubject.className = "px-4 py-2 border";
+
+      const cellAssignment1 = row.insertCell();
+      cellAssignment1.textContent = "";
+      cellAssignment1.className = "assignment1 px-4 py-2 border text-center";
+
+      const cellAssignment2 = row.insertCell();
+      cellAssignment2.textContent = "";
+      cellAssignment2.className = "assignment2 px-4 py-2 border text-center";
+    });
+
+    container.appendChild(table);
+    const accordionContent = container.closest(".accordion-content");
+    accordionContent.style.maxHeight = null;
+    const tableHeight = table.offsetHeight;
+    accordionContent.style.maxHeight = tableHeight + "px";
+  }
+
+  function fetchAssignment(subject) {
+    return new Promise((resolve, reject) => {
+      const semester = "{{ semester }}";
+      const batch = "{{ batch }}";
+      const userid = "{{ userid }}";
+      const url = `/my_assignment?batch=${batch}&semester=${semester}&subject=${subject}&rollNumber=${userid}`;
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          resolve(data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+  //************************************************************* For Assignment END *************************************************************
+
+
+  //************************************************************* For Notes START ****************************************************************
+  function getNotesData(subject) {
+    fetch(`/get_uploaded_notes?subject=${encodeURIComponent(subject)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          displayNotes(data.notes);
+        } else {
+          alert('Error fetching uploaded notes');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching uploaded notes:', error);
+        alert('Error fetching uploaded notes');
+      });
+  }
+
+  function displayNotes(notes) {
+    const notesTableBody = document.getElementById('notesTableBody');
+    notesTableBody.innerHTML = "";
+
+    notes.forEach((note, index) => {
+      const row = document.createElement('tr');
+      row.classList.add('h-14', 'border-t');
+
+      row.innerHTML = `
+      <td class="border-r">${index + 1}</td>
+      <td class="border-r">${note.id}</td>
+      <td class="text-left px-2 border-r">
+        ${note.filename}
+        <div style="font-size: 0.8em; color: gray;font-weight: 400;">${note.upload_date}</div>
+      </td>
+      <td>
+        <a href="${note.filepath}" download="${note.filename}" target="_blank">
+          <div class="flex items-center justify-center my-auto mx-auto rounded-full border border-transparent w-10 h-10 transition-all ease-in-out duration-150 hover:bg-green-100 hover:cursor-pointer hover:border-green-300">
+            <img loading="lazy" src="../static/Assets/download.png" class="h-5 min-w-5" alt="Download File" />
+          </div>
+        </a>
+      </td>
+    </td>
+    `;
+
+      notesTableBody.appendChild(row);
+    });
+
+    const notesModal = document.getElementById('notesModal');
+    notesModal.style.display = 'block';
+  }
+
+  notesModal = document.getElementById("notesModal");
+  function closeNotesModal() {
+    notesModal.style.display = "none";
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    function filterTable(searchQuery) {
+      const tableRows = document.querySelectorAll(`#studentTableForNotes tbody tr`);
+
+      tableRows.forEach(row => {
+        const idCell = row.querySelector("td:nth-child(2)");
+        const nameCell = row.querySelector("td:nth-child(3)");
+
+        const id = idCell.textContent.toLowerCase();
+        const name = nameCell.textContent.toLowerCase();
+
+        const searchQueryLower = searchQuery.toLowerCase();
+
+        if (id.includes(searchQueryLower)) {
+          highlightMatch(idCell, searchQuery);
+        } else {
+          removeHighlight(idCell);
+        }
+
+        if (name.includes(searchQueryLower)) {
+          highlightMatch(nameCell, searchQuery);
+        } else {
+          removeHighlight(nameCell);
+        }
+
+        if (id.includes(searchQueryLower) || name.includes(searchQueryLower)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+
+    function highlightMatch(cell, searchQuery) {
+      const text = cell.textContent;
+      const index = text.toLowerCase().indexOf(searchQuery);
+      const highlightedText = `<mark>${text.substring(index, index + searchQuery.length)}</mark>`;
+      cell.innerHTML = text.substring(0, index) + highlightedText + text.substring(index + searchQuery.length);
+    }
+
+    function removeHighlight(cell) {
+      cell.innerHTML = cell.textContent;
+    }
+
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", function () {
+      const searchQuery = this.value.trim().toLowerCase();
+      filterTable(searchQuery);
+    });
+  });
+  //************************************************************* For Notes END ****************************************************************
+
+  //************************************************************* For MST Papers START ****************************************************************
+  function getMSTPapersData(subject) {
+    fetch(`/get_uploaded_mst_paper?subject=${encodeURIComponent(subject)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          displayMSTPapers(data.mstPapers);
+        } else {
+          alert('Error fetching uploaded MST Papers');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching uploaded MST Papers:', error);
+        alert('Error fetching uploaded MST Papers');
+      });
+  }
+
+  function displayMSTPapers(mstPapers) {
+    const mstPapersTableBody = document.getElementById('mstPapersTableBody');
+    mstPapersTableBody.innerHTML = "";
+
+    mstPapers.forEach((mst, index) => {
+      const row = document.createElement('tr');
+      row.classList.add('h-14', 'border-t');
+
+      row.innerHTML = `
+      <td class="border-r">${index + 1}</td>
+      <td class="border-r">${mst.id}</td>
+      <td class="text-left px-2 border-r">
+        ${mst.filename}
+        <div style="font-size: 0.8em; color: gray;font-weight: 400;">${mst.upload_date}</div>
+      </td>
+      <td>
+        <a href="${mst.filepath}" download="${mst.filename}" target="_blank">
+          <div class="flex items-center justify-center my-auto mx-auto rounded-full border border-transparent w-10 h-10 transition-all ease-in-out duration-150 hover:bg-green-100 hover:cursor-pointer hover:border-green-300">
+            <img loading="lazy" src="../static/Assets/download.png" class="h-5 min-w-5" alt="Download File" />
+          </div>
+        </a>
+      </td>
+    </td>
+    `;
+
+      mstPapersTableBody.appendChild(row);
+    });
+
+    const MSTPapersModal = document.getElementById('MSTPapersModal');
+    MSTPapersModal.style.display = 'block';
+  }
+
+  MSTPapersModal = document.getElementById("MSTPapersModal");
+  function closeMSTPapersModal() {
+    MSTPapersModal.style.display = "none";
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    function filterTable(searchQuery) {
+      const tableRows = document.querySelectorAll(`#studentTableForMSTPapers tbody tr`);
+
+      tableRows.forEach(row => {
+        const idCell = row.querySelector("td:nth-child(2)");
+        const nameCell = row.querySelector("td:nth-child(3)");
+
+        const id = idCell.textContent.toLowerCase();
+        const name = nameCell.textContent.toLowerCase();
+
+        const searchQueryLower = searchQuery.toLowerCase();
+
+        if (id.includes(searchQueryLower)) {
+          highlightMatch(idCell, searchQuery);
+        } else {
+          removeHighlight(idCell);
+        }
+
+        if (name.includes(searchQueryLower)) {
+          highlightMatch(nameCell, searchQuery);
+        } else {
+          removeHighlight(nameCell);
+        }
+
+        if (id.includes(searchQueryLower) || name.includes(searchQueryLower)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+
+    function highlightMatch(cell, searchQuery) {
+      const text = cell.textContent;
+      const index = text.toLowerCase().indexOf(searchQuery);
+      const highlightedText = `<mark>${text.substring(index, index + searchQuery.length)}</mark>`;
+      cell.innerHTML = text.substring(0, index) + highlightedText + text.substring(index + searchQuery.length);
+    }
+
+    function removeHighlight(cell) {
+      cell.innerHTML = cell.textContent;
+    }
+
+    const searchInput = document.getElementById("searchInputMSTPapers");
+    searchInput.addEventListener("input", function () {
+      const searchQuery = this.value.trim().toLowerCase();
+      filterTable(searchQuery);
+    });
+  });
+  //************************************************************* For MST Papers END ****************************************************************
+
+  //************************************************************* For MST Papers START ****************************************************************
+  function getMSTPapersData(subject) {
+    fetch(`/get_uploaded_mst_paper?subject=${encodeURIComponent(subject)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          displayMSTPapers(data.mstPapers);
+        } else {
+          alert('Error fetching uploaded MST Papers');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching uploaded MST Papers:', error);
+        alert('Error fetching uploaded MST Papers');
+      });
+  }
+
+  function displayMSTPapers(mstPapers) {
+    const mstPapersTableBody = document.getElementById('mstPapersTableBody');
+    mstPapersTableBody.innerHTML = "";
+
+    mstPapers.forEach((mst, index) => {
+      const row = document.createElement('tr');
+      row.classList.add('h-14', 'border-t');
+
+      row.innerHTML = `
+      <td class="border-r">${index + 1}</td>
+      <td class="border-r">${mst.id}</td>
+      <td class="text-left px-2 border-r">
+        ${mst.filename}
+        <div style="font-size: 0.8em; color: gray;font-weight: 400;">${mst.upload_date}</div>
+      </td>
+      <td>
+        <a href="${mst.filepath}" download="${mst.filename}" target="_blank">
+          <div class="flex items-center justify-center my-auto mx-auto rounded-full border border-transparent w-10 h-10 transition-all ease-in-out duration-150 hover:bg-green-100 hover:cursor-pointer hover:border-green-300">
+            <img loading="lazy" src="../static/Assets/download.png" class="h-5 min-w-5" alt="Download File" />
+          </div>
+        </a>
+      </td>
+    </td>
+    `;
+
+      mstPapersTableBody.appendChild(row);
+    });
+
+    const MSTPapersModal = document.getElementById('MSTPapersModal');
+    MSTPapersModal.style.display = 'block';
+  }
+
+  MSTPapersModal = document.getElementById("MSTPapersModal");
+  function closeMSTPapersModal() {
+    MSTPapersModal.style.display = "none";
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    function filterTable(searchQuery) {
+      const tableRows = document.querySelectorAll(`#studentTableForMSTPapers tbody tr`);
+
+      tableRows.forEach(row => {
+        const idCell = row.querySelector("td:nth-child(2)");
+        const nameCell = row.querySelector("td:nth-child(3)");
+
+        const id = idCell.textContent.toLowerCase();
+        const name = nameCell.textContent.toLowerCase();
+
+        const searchQueryLower = searchQuery.toLowerCase();
+
+        if (id.includes(searchQueryLower)) {
+          highlightMatch(idCell, searchQuery);
+        } else {
+          removeHighlight(idCell);
+        }
+
+        if (name.includes(searchQueryLower)) {
+          highlightMatch(nameCell, searchQuery);
+        } else {
+          removeHighlight(nameCell);
+        }
+
+        if (id.includes(searchQueryLower) || name.includes(searchQueryLower)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+
+    function highlightMatch(cell, searchQuery) {
+      const text = cell.textContent;
+      const index = text.toLowerCase().indexOf(searchQuery);
+      const highlightedText = `<mark>${text.substring(index, index + searchQuery.length)}</mark>`;
+      cell.innerHTML = text.substring(0, index) + highlightedText + text.substring(index + searchQuery.length);
+    }
+
+    function removeHighlight(cell) {
+      cell.innerHTML = cell.textContent;
+    }
+
+    const searchInput = document.getElementById("searchInputMSTPapers");
+    searchInput.addEventListener("input", function () {
+      const searchQuery = this.value.trim().toLowerCase();
+      filterTable(searchQuery);
+    });
+  });
+  //************************************************************* For MST Papers END ****************************************************************
+
+  //************************************************************* For Previous Papers START ****************************************************************
+  function getPreviousPapersData(subject) {
+    fetch(`/get_uploaded_previous_paper?subject=${encodeURIComponent(subject)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          displayPreviousPapers(data.PreviousPapers);
+        } else {
+          alert('Error fetching uploaded Previous Papers');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching uploaded Previous Papers:', error);
+        alert('Error fetching uploaded Previous Papers');
+      });
+  }
+
+  function displayPreviousPapers(PreviousPapers) {
+    const previousPapersTableBody = document.getElementById('previousPapersTableBody');
+    previousPapersTableBody.innerHTML = "";
+
+    PreviousPapers.forEach((paper, index) => {
+      const row = document.createElement('tr');
+      row.classList.add('h-14', 'border-t');
+
+      row.innerHTML = `
+      <td class="border-r">${index + 1}</td>
+      <td class="border-r">${paper.id}</td>
+      <td class="text-left px-2 border-r">
+        ${paper.filename}
+        <div style="font-size: 0.8em; color: gray;font-weight: 400;">${paper.upload_date}</div>
+      </td>
+      <td>
+        <a href="${paper.filepath}" download="${paper.filename}" target="_blank">
+          <div class="flex items-center justify-center my-auto mx-auto rounded-full border border-transparent w-10 h-10 transition-all ease-in-out duration-150 hover:bg-green-100 hover:cursor-pointer hover:border-green-300">
+            <img loading="lazy" src="../static/Assets/download.png" class="h-5 min-w-5" alt="Download File" />
+          </div>
+        </a>
+      </td>
+    </td>
+    `;
+
+      previousPapersTableBody.appendChild(row);
+    });
+
+    const PreviousPapersModal = document.getElementById('PreviousPapersModal');
+    PreviousPapersModal.style.display = 'block';
+  }
+
+  PreviousPapersModal = document.getElementById("PreviousPapersModal");
+  function closePreviousPapersModal() {
+    PreviousPapersModal.style.display = "none";
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    function filterTable(searchQuery) {
+      const tableRows = document.querySelectorAll(`#studentTableForPreviousPapers tbody tr`);
+
+      tableRows.forEach(row => {
+        const idCell = row.querySelector("td:nth-child(2)");
+        const nameCell = row.querySelector("td:nth-child(3)");
+
+        const id = idCell.textContent.toLowerCase();
+        const name = nameCell.textContent.toLowerCase();
+
+        const searchQueryLower = searchQuery.toLowerCase();
+
+        if (id.includes(searchQueryLower)) {
+          highlightMatch(idCell, searchQuery);
+        } else {
+          removeHighlight(idCell);
+        }
+
+        if (name.includes(searchQueryLower)) {
+          highlightMatch(nameCell, searchQuery);
+        } else {
+          removeHighlight(nameCell);
+        }
+
+        if (id.includes(searchQueryLower) || name.includes(searchQueryLower)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+
+    function highlightMatch(cell, searchQuery) {
+      const text = cell.textContent;
+      const index = text.toLowerCase().indexOf(searchQuery);
+      const highlightedText = `<mark>${text.substring(index, index + searchQuery.length)}</mark>`;
+      cell.innerHTML = text.substring(0, index) + highlightedText + text.substring(index + searchQuery.length);
+    }
+
+    function removeHighlight(cell) {
+      cell.innerHTML = cell.textContent;
+    }
+
+    const searchInput = document.getElementById("searchInputPreviousPapers");
+    searchInput.addEventListener("input", function () {
+      const searchQuery = this.value.trim().toLowerCase();
+      filterTable(searchQuery);
+    });
+  });
+  //************************************************************* For Previous Papers END ****************************************************************
+
+  document.addEventListener('DOMContentLoaded', function () {
+    fetchUploadedAnnouncements();
+
+    document.getElementById('AnnouncementButton').addEventListener('click', openAnnouncementModal);
+    document.getElementById('announcementForm').addEventListener('submit', submitAnnouncementForm);
+
+    const fnameInput = document.getElementById('fname');
+    const lnameInput = document.getElementById('lname');
+    const useridInput = document.getElementById('userid');
+
+    const fname = "{{ fname }}";
+    const lname = "{{ lname }}";
+    const userid = "{{ userid }}";
+
+    fnameInput.value = fname;
+    lnameInput.value = lname;
+    useridInput.value = userid;
+
+    const authorInfo = document.getElementById('authorInfo');
+    authorInfo.textContent = `Author:- ${fname} ${lname} (ID: ${userid})`;
+
+    const bannerInput = document.getElementById('banner');
+    const fileSizeError = document.getElementById('fileSizeError');
+    const publishButton = document.getElementById('publishButton');
+
+    bannerInput.addEventListener('change', function () {
+      const file = bannerInput.files[0];
+      if (file && file.size > 5 * 1024 * 1024) { // 5MB in bytes
+        fileSizeError.classList.remove('hidden');
+        publishButton.disabled = true;
+      } else {
+        fileSizeError.classList.add('hidden');
+        publishButton.disabled = false;
+      }
+    });
+
+    function openAnnouncementModal() {
+      document.getElementById('announcementModal').style.display = 'block';
+    }
+
+    function closeAnnouncementModal() {
+      document.getElementById('announcementModal').style.display = 'none';
+    }
+
+    function submitAnnouncementForm(event) {
+      event.preventDefault();
+
+      const formData = new FormData(document.getElementById('announcementForm'));
+      const eventDateInput = document.getElementById('event_date');
+
+      formData.set('event_date', formatEventDate(eventDateInput.value));
+
+      fetch('/make_announcement', {
+        method: 'POST',
+        body: formData
+      }).then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Announcement published successfully!');
+            closeAnnouncementModal();
+            window.location.reload(); // Optionally reload the page after successful submission
+          } else {
+            alert('Error publishing announcement.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error publishing announcement.');
+        });
+    }
+
+    function formatEventDate(inputDate) {
+      const date = new Date(inputDate);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear().toString().slice(-2);
+      return `${day}-${month}-${year}`;
+    }
+
+    function fetchUploadedAnnouncements() {
+      fetch(`/get_uploaded_announcements`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            displayAnnouncements(data.announcements);
+          } else {
+            alert('Error fetching uploaded Announcements');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching uploaded Announcements:', error);
+          alert('Error fetching uploaded Announcements');
+        });
+    }
+
+    function displayAnnouncements(announcements) {
+      const announcementsContainer = document.getElementById('announcements');
+      announcementsContainer.innerHTML = "";
+
+      announcements.forEach((announcement, index) => {
+        const announcementDiv = document.createElement('div');
+        announcementDiv.classList.add('rounded-lg');
+
+        const accordionId = `announcement-${index}`;
+        announcementDiv.innerHTML = `
+        <button class="accordion text-left mb-2 w-full bg-white rounded-lg border max-[1148px]:rounded-none">
+          <div class="py-2 smForBanner:mx-8 max-[580px]:mx-3">
+            <div class="flex justify-between items-center">
+              <h3 class="text-md mr-2">${announcement.title}</h3>
+              <svg class="w-10 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+            <p class="text-gray-600 text-sm">Event Date: ${announcement.event_date}</p>
+          </div>
+        
+          <div class="panel smForBanner:mx-8 max-[580px]:mx-3">
+            <img src="${announcement.banner_path}" loading="lazy" class="w-full object-cover mb-2 max-h-[400px]" alt="Announcement Image" />
+            <p class="text-gray-600">Author:- ${announcement.fname} ${announcement.lname} (ID: ${announcement.userid})</p>
+            <p class="text-gray-600">Organising Club:- ${announcement.organising_club}</p>
+            <p class="text-gray-600">Event Date:- ${announcement.event_date}</p>
+            <a href="${announcement.registration_link}" target="_blank" class="text-blue-600">Registration Link &#8599;</a>
+            <p class="mt-2">${announcement.description}</p>
+          </div>
+        </button>
+      `;
+
+        announcementsContainer.appendChild(announcementDiv);
+
+        const accordionButton = announcementDiv.querySelector('.accordion');
+        const panel = announcementDiv.querySelector('.panel');
+        accordionButton.addEventListener('click', function () {
+          panel.classList.toggle('show');
+          const svg = accordionButton.querySelector('svg');
+          svg.classList.toggle('rotate-180');
+        });
+      });
+    }
+  });
+
+
+  function closeAnnouncementModal() {
+    document.getElementById("announcementModal").style.display = "none";
+  }
+
+
+
+
+
+
+</script>
+
+</html>

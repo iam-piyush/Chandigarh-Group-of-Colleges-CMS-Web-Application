@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyCGC - Faculty Sign up</title>
+  <link rel="stylesheet" href="../static/output.css" />
+  <link rel="shortcut icon" href="../static/Assets/favicon.ico" type="image/x-icon" />
+  <style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      width: auto;
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      appearance: none;
+    }
+
+    input[type="date"] {
+      color: #bdbdbd;
+    }
+
+    input[type="file"] {
+      width: 200px;
+    }
+
+    .selected {
+      color: #212121;
+    }
+
+    .error-message {
+      display: block;
+      position: relative;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      cursor: pointer;
+    }
+
+    .left {
+      -webkit-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.05);
+      -moz-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.05);
+      box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.05);
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document
+        .querySelector(".left")
+        .addEventListener("scroll", function () {
+          var container = this;
+          var scrollButton = document.getElementById("scrollButton");
+          var form = document.getElementById("myform");
+
+          var containerBottom = container.getBoundingClientRect().bottom;
+          var formBottom = form.getBoundingClientRect().bottom;
+
+          if (formBottom <= containerBottom) {
+            scrollButton.style.display = "none";
+          } else {
+            scrollButton.style.display = "block";
+          }
+        });
+    });
+  </script>
+</head>
+
+<body class="bg-black overflow-hidden max-[900px]:bg-white">
+  <main class="h-screen w-screen relative flex justify-center">
+    <div class="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-70 max-[900px]:hidden"
+      style="background-image: url('../static/Assets/Hero.webp');"></div>
+    <div class="absolute bottom-0 left-0 w-full">
+      <img src="../static/Assets/HeroOverlay.png" alt="" class="w-full opacity-80 max-[900px]:hidden">
+    </div>
+    <div
+      class="left bg-neutral-50 max-[900px]:bg-white rounded-xl flex flex-col w-[500px] absolute right-0 mr-20 mt-[6%] max-[900px]:right-auto max-[900px]:left-auto max-[900px]:mr-0 max-[520px]:w-[95%] overflow-auto h-[80%] max-[520px]:h-[86%]">
+      <div class="scroll-indicator flex item-center justify-center absolute bottom-8 z-10 right-1/2 left-1/2">
+        <embed src="https://lottie.host/embed/e18fa663-f4c8-4ef6-b2b1-01e654b9be2f/Dz1PjZyKCC.json" type=""
+          class="w-10 h-10 fixed bg-white rounded-full shadow-md" id="scrollButton" />
+      </div>
+      <section class="absolute z-0">
+        <div class="p-8  max-[500px]:p-6">
+          <img loading="lazy" src="../static/Assets/logo.webp" alt="CGC Landran"
+            class="w-[250px] max-[500px]:w-[200px]" />
+          <div class="flex items-center justify-center mt-6 max-[500px]:mt-4">
+            <div class="">
+              <h2 class="text-3xl font-bold leading-tight text-black sm:text-4xl">
+                Faculty Sign up
+              </h2>
+              <p class="mt-2 text-sm text-gray-600">
+                Already have an account?
+                <a href="{{ url_for('routes.login') }}" title=""
+                  class="font-semibold text-black transition-all duration-200 hover:underline">
+                  Sign in
+                </a>
+              </p>
+              <p class="mt-2 text-sm text-gray-600">
+                Create a student account?
+                <a href="{{ url_for('routes.studentsignup') }}" title=""
+                  class="font-semibold text-black transition-all duration-200 hover:underline">
+                  Student Sign up
+                </a>
+              </p>
+              <form method="post" action="{{ url_for('routes.facultysignup') }}" class="mt-6 max-[500px]:mt-4"
+                enctype="multipart/form-data" id="myform">
+                <div class="space-y-5">
+                  <div>
+                    <label for="userid" class="text-base font-medium text-gray-900">
+                      Faculty ID
+                    </label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="text" placeholder="Faculty ID" id="userid" name="userid" required />
+                    </div>
+                    <div id="userid-error" class="text-sm text-red-600 font-bold mt-2"></div>
+                  </div>
+                  <div>
+                    <label for="fname" class="text-base font-medium text-gray-900">
+                      First Name
+                    </label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="text" placeholder="Write your first name" id="fname" name="fname" required />
+                    </div>
+                  </div>
+                  <div>
+                    <label for="lname" class="text-base font-medium text-gray-900">
+                      Last Name
+                    </label>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="text" placeholder="Write your last name" id="lname" name="lname" />
+                    </div>
+                  </div>
+                  <div>
+                    <label for="role" class="text-base font-medium text-gray-900">
+                      Please indicate your role:
+                    </label>
+                    <div class="mt-2 text-sm">
+                      <input type="radio" id="HOD" name="role" value="Head of Department" />&nbsp;
+                      <label for="HOD" class="text-gray-400">Head of Department</label><br />
+                      <input type="radio" id="AC" name="role" value="Academic Coordinator" />&nbsp;
+                      <label for="AC" class="text-gray-400">Academic Coordinator</label><br />
+                      <input type="radio" id="CC" name="role" value="Class Counselor" />&nbsp;
+                      <label for="CC" class="text-gray-400">Class Counselor</label><br />
+                      <input type="radio" id="TPP" name="role" value="TPP Instructor" />&nbsp;
+                      <label for="TPP" class="text-gray-400">TPP Instructor</label><br />
+                      <input type="radio" id="Instructor" name="role" value="Instructor" />&nbsp;
+                      <label for="Instructor" class="text-gray-400">Instructor</label>
+                    </div>
+                  </div>
+                  <div id="semesterSection" style="display: none">
+                    <label for="semesters" class="text-base font-medium text-gray-900">
+                      Please select semesters:
+                    </label>
+                    <div class="mt-2 text-sm">
+                      <input type="radio" id="1st and 2nd Semester" name="semesterAC"
+                        value="1st and 2nd Semester" />&nbsp;
+                      <label for="1st and 2nd Semester" class="text-gray-400">1st and 2nd Semester</label><br />
+                      <input type="radio" id="3rd and 4th Semester" name="semesterAC"
+                        value="3rd and 4th Semester" />&nbsp;
+                      <label for="3rd and 4th Semester" class="text-gray-400">3rd and 4th Semester</label><br />
+                      <input type="radio" id="5th and 6th Semester" name="semesterAC"
+                        value="5th and 6th Semester" />&nbsp;
+                      <label for="5th and 6th Semester" class="text-gray-400">5th and 6th Semester</label><br />
+                      <input type="radio" id="7th and 8th Semester" name="semesterAC"
+                        value="7th and 8th Semester" />&nbsp;
+                      <label for="7th and 8th Semester" class="text-gray-400">7th and 8th Semester</label>
+                    </div>
+                  </div>
+
+                  <div id="TPPSection" style="display: none">
+                    <label for="tpp" class="text-base font-medium text-gray-900">
+                      Please select subject:
+                    </label>
+                    <div class="mt-2 text-sm">
+                      <input type="radio" id="Verbal" name="tpp" value="Verbal" />&nbsp;
+                      <label for="Verbal" class="text-gray-400">Verbal</label><br />
+                      <input type="radio" id="Aptitude" name="tpp" value="Aptitude" />&nbsp;
+                      <label for="Aptitude" class="text-gray-400">Aptitude</label><br />
+                      <input type="radio" id="C/C++ (Technical)" name="tpp" value="C/C++ (Technical)" />&nbsp;
+                      <label for="C/C++ (Technical)" class="text-gray-400">C/C++ (Technical)</label><br />
+                      <input type="radio" id="Java" name="tpp" value="Java" />&nbsp;
+                      <label for="Java" class="text-gray-400">Java</label>
+                    </div>
+                  </div>
+
+                  <div id="InstructorSection" style="display: none">
+                    <div>
+                      <label for="InstDesig" class="text-base font-medium text-gray-900">
+                        Your designation
+                      </label>
+                      <div class="mt-2">
+                        <input
+                          class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                          type="text" placeholder="E.g. Professor, Associate Professor" id="InstDesig"
+                          name="InstDesig" />
+                      </div>
+                    </div>
+                  </div>
+                  <div id="collegeSection">
+                    <label for="collegename" class="text-base font-medium text-gray-900">College Name</label>
+                    <div class="mt-2">
+                      <select id="collegename" name="collegename"
+                        class="rounded-md border-gray-300 text-gray-400 w-full text-sm">
+                        <option>Required</option>
+                        <option value="Chandigarh Engineering College">
+                          Chandigarh Engineering College
+                        </option>
+                        <option value="Chandigarh College of Technology">
+                          Chandigarh College of Technology
+                        </option>
+                        <option value="Chandigarh College of Pharmacy">
+                          Chandigarh College of Pharmacy
+                        </option>
+                        <option value="Chandigarh Business School of Administration">
+                          Chandigarh Business School of Administration
+                        </option>
+                        <option value="Chandigarh College of Hospitality">
+                          Chandigarh College of Hospitality
+                        </option>
+                        <option value="Chandigarh College of Education">
+                          Chandigarh College of Education
+                        </option>
+                        <option value="Chandigarh College of Hotel Management and Catering Technology">
+                          Chandigarh College of Hotel Management and Catering
+                          Technology
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div id="departmentSection">
+                    <label for="departmentname" class="text-base font-medium text-gray-900">
+                      Department Name
+                    </label>
+                    <div class="mt-2">
+                      <select id="departmentname" name="departmentname"
+                        class="rounded-md border-gray-300 text-gray-400 w-full text-sm">
+                        <option>Required</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="profilepicture" class="text-base font-medium text-gray-900">
+                      Profile Picture
+                    </label>
+                    <div class="mt-2">
+                      <div
+                        class="text-center rounded-md border border-gray-300 py-2 flex flex-col justify-center items-center">
+                        <img loading="lazy" src="../static//Assets/img icon.svg" alt="" style="
+                              height: 100px;
+                              margin-left: auto;
+                              margin-right: auto;
+                            " />
+                        <div class="mt-4 text-sm leading-6 text-gray-600 flex justify-center items-center">
+                          <label for="file-upload" class="flex flex-col items-center"
+                            style="color: #3949ab; font-weight: bold">
+                            <input id="profilepicture" name="profilepicture" type="file" accept=".jpg, .jpeg, .png"
+                              onchange="checkFileSize(this)" required />
+                          </label>
+                        </div>
+                        <p class="text-xs leading-5 text-gray-600">
+                          PNG, JPG, JPEG up to 2MB
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex items-center justify-between">
+                      <label for="password" class="text-base font-medium text-gray-900">
+                        Password
+                      </label>
+                    </div>
+                    <div class="mt-2">
+                      <input
+                        class="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                        type="password" placeholder="Password" id="password" name="password" required />
+                    </div>
+                  </div>
+                  {% with messages =
+                  get_flashed_messages(with_categories=true) %} {% if messages
+                  %} {% for category, message in messages %} {% if category ==
+                  'error' or category == 'alert' %}
+                  <div class="error-message items-center flex {% if category == 'error' %} bg-red-100 {% endif %}"
+                    role="alert">
+                    <strong>{{ category }}</strong> {{ message }}
+                    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                  </div>
+                  {% endif %} {% endfor %} {% endif %} {% endwith %}
+                  <div>
+                    <button type="submit" value="Log In" id="submit-button"
+                      class="inline-flex w-full items-center justify-center rounded-md bg-black py-2.5 font-semibold leading-7 text-white transition ease-in-out delay-100 hover:bg-black/80">
+                      Create Account
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="ml-2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <a href="{{ url_for('routes.team') }}" class="inline-block items-center">
+                <div class="flex items-center mt-2">
+                  <img loading="lazy" src="../static/Assets/developer.svg" alt="" style="height: 15px" />
+                  <p class="text-gray-400 text-sm ml-1.5">Developer Team</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    function checkFileSize(input) {
+      let fileSize = input.files[0].size;
+      let maxSize = 2 * 1024 * 1024;
+
+      if (fileSize > maxSize) {
+        alert(
+          "File size exceeds the limit (2 MB). Please select a smaller file."
+        );
+        input.value = "";
+      }
+    }
+
+    document
+      .getElementById("collegename")
+      .addEventListener("change", function () {
+        let selectedOption = this.options[this.selectedIndex];
+        if (selectedOption) {
+          if (selectedOption.value !== "") {
+            this.classList.add("selected");
+          } else {
+            this.classList.remove("selected");
+          }
+        }
+      });
+
+    document
+      .getElementById("departmentname")
+      .addEventListener("change", function () {
+        let selectedOption = this.options[this.selectedIndex];
+        if (selectedOption) {
+          if (selectedOption.value !== "") {
+            this.classList.add("selected");
+          } else {
+            this.classList.remove("selected");
+          }
+        }
+      });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      populateDepartmentDropdown();
+    });
+
+    function populateDepartmentDropdown() {
+      let selectedCollege = document.getElementById("collegename").value;
+      let departmentDropdown = document.getElementById("departmentname");
+      departmentDropdown.innerHTML = "<option value=''>Required</option>";
+
+      let departments = {
+        "Chandigarh Engineering College": [
+          "Computer Science Engineering",
+          "Electronics and Communication Engineering",
+          "Mechanical Engineering",
+          "Applied Science",
+        ],
+        "Chandigarh College of Technology": [
+          "Computer Science Engineering",
+          "Electronics and Communication Engineering",
+          "Mechanical Engineering",
+          "Applied Science",
+        ],
+        "Chandigarh College of Pharmacy": [
+          // Departments f
+        ],
+        "Chandigarh Business School of Administration": [
+          // Departments 
+        ],
+
+      };
+
+      if (selectedCollege in departments) {
+        departments[selectedCollege].forEach(function (department) {
+          let option = document.createElement("option");
+          option.text = department;
+          option.value = department;
+          departmentDropdown.appendChild(option);
+        });
+      }
+    }
+
+    document.getElementById("collegename").addEventListener("change", function () {
+      populateDepartmentDropdown();
+    });
+
+    document
+      .querySelectorAll('input[type="radio"][name="role"]')
+      .forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          if (this.value === "Academic Coordinator") {
+            document.getElementById("semesterSection").style.display =
+              "block";
+          } else {
+            document.getElementById("semesterSection").style.display = "none";
+          }
+        });
+      });
+
+    document
+      .querySelectorAll('input[type="radio"][name="role"]')
+      .forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          if (this.value === "TPP Instructor") {
+            document.getElementById("TPPSection").style.display = "block";
+          } else {
+            document.getElementById("TPPSection").style.display = "none";
+          }
+        });
+      });
+
+    document
+      .querySelectorAll('input[type="radio"][name="role"]')
+      .forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          if (this.value === "Instructor") {
+            document.getElementById("InstructorSection").style.display =
+              "block";
+          } else if (this.value === "Class Counselor") {
+            document.getElementById("InstructorSection").style.display =
+              "block";
+          } else if (this.value === "Academic Coordinator") {
+            document.getElementById("InstructorSection").style.display =
+              "block";
+          } else if (this.value === "Head of Department") {
+            document.getElementById("InstructorSection").style.display =
+              "block";
+          } else {
+            document.getElementById("InstructorSection").style.display =
+              "none";
+          }
+        });
+      });
+
+    document
+      .querySelectorAll('input[type="radio"][name="role"]')
+      .forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          if (this.value === "TPP Instructor") {
+            document.getElementById("collegeSection").style.display = "none";
+          } else {
+            document.getElementById("collegeSection").style.display = "block";
+          }
+        });
+      });
+
+    document
+      .querySelectorAll('input[type="radio"][name="role"]')
+      .forEach(function (radio) {
+        radio.addEventListener("change", function () {
+          if (this.value === "TPP Instructor") {
+            document.getElementById("departmentSection").style.display =
+              "none";
+          } else {
+            document.getElementById("departmentSection").style.display =
+              "block";
+          }
+        });
+      });
+
+    const radioInputs = document.querySelectorAll('input[type="radio"]');
+
+    radioInputs.forEach(function (radioInput) {
+      radioInput.addEventListener("change", function () {
+        const label = document.querySelector(`label[for="${this.id}"]`);
+
+        document
+          .querySelectorAll(".selected")
+          .forEach(function (selectedLabel) {
+            selectedLabel.classList.remove("selected");
+          });
+
+        label.classList.add("selected");
+      });
+    });
+
+    document.getElementById("userid").addEventListener("input", function () {
+      var userid = this.value;
+      var errorElement = document.getElementById("userid-error");
+      errorElement.innerText = "";
+      if (userid.trim() === "") {
+        errorElement.innerText = "";
+        return;
+      }
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4) {
+          if (this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            if (response.exists) {
+              errorElement.innerText =
+                "Faculty ID already exists. Please use another.";
+              document.getElementById("submit-button").disabled = true;
+            } else {
+              errorElement.innerText = "";
+              document.getElementById("submit-button").disabled = false;
+            }
+          } else {
+            console.error("Error:", this.status);
+          }
+        }
+      };
+      xhttp.open("POST", "{{ url_for('routes.check_userid') }}", true);
+      xhttp.setRequestHeader(
+        "Content-type",
+        "application/x-www-form-urlencoded"
+      );
+      xhttp.send("userid=" + userid);
+    });
+  </script>
+</body>
+
+</html>
