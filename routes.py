@@ -59,7 +59,6 @@ def studentsignup():
             flash('User ID already exists. Please choose another.', 'error')
             return redirect(url_for('.studentsignup'))
         
-        # Retrieve form data
         fname = request.form['fname']
         lname = request.form.get('lname')  
         dob = request.form.get('dob')  
@@ -77,14 +76,11 @@ def studentsignup():
         end_year = int(request.form['endYear'])
         LEET = request.form['leetStudent']
         
-        # Subtract 1 from start year if LEET student
         if LEET == 'yes':
             start_year -= 1
         
-        # Create batch string
         batch = f"{start_year}-{end_year}"
         
-        # Save data to the database
         db_path = os.path.join(DATABASE_FOLDER, 'Students.db')
         conn = sqlite3.connect(db_path)
         c = conn.cursor()
@@ -212,7 +208,7 @@ def userid_present():
 #################################### Route to check whether the userid present or not End ####################################
 
 
-#################################### Route to check whether the userid exists or not Start ####################################
+#################################### Route to check whether the phone number exists or not Start ####################################
 
 @routes_bp.route('/check_phonenumber', methods=['POST'])
 def check_phonenumber():
@@ -232,7 +228,7 @@ def is_phonenumber_existing(phonenumber):
     
     return existing_phonenumber is not None
 
-#################################### Route to check whether the userid exists or not End ####################################
+#################################### Route to check whether the phone number exists or not End ####################################
 
 
 #################################### Route for facultysignup Start ####################################
@@ -1443,19 +1439,18 @@ def save_data(assignment_data):
         departmentname = user_data['departmentname']
         batch = assignment_data.get('batch')
         subject = assignment_data.get('subject')
+        semester = assignment_data.get('semester')
 
         try:
             if collegename == 'Chandigarh Engineering College':
                 COLLEGEDB = 'database/CEC'
                 if departmentname == 'Electronics and Communication Engineering':
                     DEPTDB = os.path.join(COLLEGEDB, 'ECE')
-                    ASSIGNMENT_DB = os.path.join(DEPTDB, 'Assignment')
-                    BATCH_DB = os.path.join(ASSIGNMENT_DB, batch.replace(' ', '_'))
+                    BATCH_DB = os.path.join(DEPTDB, batch.replace(' ', '_'))
+                    ASSIGNMENT_DATABASE = os.path.join(BATCH_DB, 'Assignemnt', semester, f'{subject}.db')
 
                     if not os.path.exists(BATCH_DB):
                         os.makedirs(BATCH_DB)
-
-                    ASSIGNMENT_DATABASE = os.path.join(BATCH_DB, f'{subject}.db')
 
                     with sqlite3.connect(ASSIGNMENT_DATABASE) as conn:
                         cursor = conn.cursor()

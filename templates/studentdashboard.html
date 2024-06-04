@@ -17,17 +17,15 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
     overflow: hidden;
   }
 
   .modal-content {
     background-color: #fefefe;
-    margin: 3% auto;
-    border: 1px solid #888;
+    margin: 5% auto;
     border-radius: 8px;
     overflow-y: auto;
-    max-height: calc(100% - 6%);
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 6px;
   }
 
   .accordion-content {
@@ -78,8 +76,7 @@
 
 <body>
   <header>{% include 'header.html' %}</header>
-  <main
-    class="min-[1148px]:mt-4 flex justify-between max-w-screen-2xl mx-auto mb-20 max-[1148px]:flex-col">
+  <main class="min-[1148px]:mt-4 flex justify-between max-w-screen-2xl mx-auto mb-20 max-[1148px]:flex-col">
     <div class="left w-full min-[1148px]:w-2/3">
       <div class="HeroIntro w-full min-[1148px] rounded-lg overflow-hidden pb-6 border bg-white">
         <div class="relative">
@@ -121,11 +118,12 @@
               </p>
             </div>
 
-            <div id="AnnouncementButton" class="bg-gray-100 px-4 py-3 rounded-lg border cursor-pointer mr-4 md:hidden">
+            <a href="#announcementsSection"
+              class="bg-gray-100 px-4 py-3 rounded-lg border cursor-pointer mr-4 md:hidden">
               <p class="text-blue-700 font-semibold hover:underline cursor-pointer">
                 Show all announcements
               </p>
-            </div>
+            </a>
           </div>
         </div>
       </div>
@@ -351,7 +349,7 @@
     </div>
     <div id="announcementModal" class="modal hidden bg-[#f4f2ee]">
       <div
-        class="modal-content border-gray-200 w-[850px] max-[1000px]:w-[900px] max-[915px]:w-full max-[915px]:mt-0 max-[915px]:rounded-none p-4">
+        class="modal-content w-[40%] max-[1000px]:w-[65%] max-[640px]:w-[80%] max-[500px]:w-[90%] max-h-[80%] max-[640px]:max-h-[95%] p-4">
         <div class="flex justify-between items-center pb-2 mb-4 border-b">
           <h2 class="text-lg font-semibold">Make Announcement</h2>
           <div
@@ -402,7 +400,7 @@
               </div>
               <div>
                 <button id="publishButton" type="submit"
-                  class="px-4 py-2 bg-[#0a66c2] text-white rounded-full transition-colors duration-300 ease-in hover:bg-[#004182]">Publish</button>
+                  class="px-6 py-2 bg-[#0a66c2] text-white text-sm rounded-full transition-colors duration-300 ease-in hover:bg-[#004182]">Publish</button>
               </div>
             </div>
           </div>
@@ -410,19 +408,20 @@
       </div>
     </div>
 
-
-
     <div
-      class="right ml-2 w-2/6 max-h-[1445px] space-y-2 overflow-auto max-[1148px]:mt-2 max-[1148px]:w-full max-[1148px]:ml-0 max-[1148px]:rounded-none">
-      <h2 class="font-semibold bg-white rounded-lg max-[1148px]:rounded-none border text-lg text-center py-4 max-[1148px]:text-left smForBanner:px-8 max-[580px]:px-3">
+      class="right ml-2 w-2/6 max-h-[1445px] space-y-2 overflow-auto max-[1148px]:mt-2 max-[1148px]:w-full max-[1148px]:ml-0 max-[1148px]:rounded-none"
+      id="announcementsSection">
+      <h2
+        class="font-semibold bg-white rounded-lg max-[1148px]:rounded-none border text-lg text-center py-4 max-[1148px]:text-left smForBanner:px-8 max-[580px]:px-3">
         Announcements</h2>
       <div id="announcements"></div>
     </div>
 
     <!--------------------------- Update Profile Details --------------------------->
-    <div id="editModal" class="modal drop-shadow-lg">
-      <div class="modal-content py-4 w-[40%] max-[1000px]:w-[65%] max-[640px]:w-[80%] max-[500px]:w-[95%]">
-        <div class="modalUp flex items-center justify-between border-b pb-2 px-8">
+    <div id="editModal" class="modal drop-shadow-lg bg-[#f4f2ee]">
+      <div
+        class="modal-content py-4 w-[40%] max-[1000px]:w-[65%] max-[640px]:w-[80%] max-[500px]:w-[90%] max-h-[80%] max-[640px]:max-h-[95%]">
+        <div class="modalUp flex items-center justify-between border-b pb-2 px-8 max-[500px]:px-3">
           <h2 class="text-lg font-semibold">Update Profile</h2>
           <div
             class="close flex items-center justify-center rounded-full h-10 w-10 border border-transparent transition-all ease-in-out duration-150 hover:bg-red-100 hover:cursor-pointer hover:border-red-300"
@@ -431,20 +430,20 @@
           </div>
         </div>
         <form id="updateForm" method="post" action="{{ url_for('routes.update_student') }}" class="">
-          <div class="space-y-4 px-8 pt-4 pb-8 border-b">
+          <div class="space-y-4 px-8 max-[500px]:px-3 pt-4 pb-8 border-b">
             <div>
               <label for="userid" class="text-base font-medium text-gray-900">User ID</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
-                  type="text" id="userid" name="userid" value="{{ userid }}" />
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 border-gray-200 focus:outline-none"
+                  type="text" id="userid" name="userid" value="{{ userid }}" readonly />
               </div>
             </div>
             <div>
               <label for="fname" class="text-base font-medium text-gray-900">First Name</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 border-gray-200 focus:outline-none"
                   type="text" id="fname" name="fname" value="{{ fname }}" />
               </div>
             </div>
@@ -452,7 +451,7 @@
               <label for="lname" class="text-base font-medium text-gray-900">Last Name</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 border-gray-200 focus:outline-none"
                   type="text" id="lname" name="lname" value="{{ lname }}" />
               </div>
             </div>
@@ -460,7 +459,7 @@
               <label for="dob" class="text-base font-medium text-gray-900">Date of Birth</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm border-gray-200 focus:outline-none"
                   type="date" id="dob" name="dob" required value="{{ dob|safe }}" />
               </div>
             </div>
@@ -468,7 +467,7 @@
               <label for="email" class="text-base font-medium text-gray-900">College Email Address</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 border-gray-200 focus:outline-none"
                   type="email" id="email" name="email" placeholder="Write your college email address"
                   onchange="validateEmail()" required value="{{ email }}" />
               </div>
@@ -480,7 +479,7 @@
               <label for="phonenumber" class="text-base font-medium text-gray-900">Phone Number</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 border-gray-200 focus:outline-none"
                   type="text" id="phonenumber" name="phonenumber" placeholder="Write your phone number" minlength="10"
                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 10) this.value = this.value.slice(0, 10);"
                   required value="{{ phonenumber }}" />
@@ -489,7 +488,8 @@
             <div>
               <label for="collegename" class="text-base font-medium text-gray-900">College</label>
               <div class="mt-2">
-                <select id="collegename" name="collegename" class="rounded-md text-gray-900 w-full text-sm">
+                <select id="collegename" name="collegename"
+                  class="rounded-md text-gray-900 w-full text-sm border-gray-200">
                   <option>{{ collegename }}</option>
                   <option value="Chandigarh Engineering College">
                     Chandigarh Engineering College
@@ -520,7 +520,7 @@
               <label for="departmentname" class="text-base font-medium text-gray-900">Department</label>
               <div class="mt-2">
                 <select
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 border-gray-200 focus:outline-none"
                   id="departmentname" name="departmentname" class="rounded-md text-gray-900 w-full">
                   <input type="hidden" id="currentDepartment" name="currentDepartment" value="{{ departmentname }}">
                 </select>
@@ -530,7 +530,7 @@
               <label for="semester" class="text-base font-medium text-gray-900">Semester</label>
               <div class="mt-2">
                 <select
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 border-gray-200 focus:outline-none"
                   id="semester" name="semester" class="rounded-md text-gray-900 w-full">
                   <option>{{ semester }}</option>
                   <option value="1st">1st</option>
@@ -548,7 +548,7 @@
               <label for="section" class="text-base font-medium text-gray-900">Section</label>
               <div class="mt-2">
                 <select
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 border-gray-200 focus:outline-none"
                   id="section" name="section" class="rounded-md text-gray-900 w-full">
                   <option>{{ section }}</option>
                   <option value="A1">A1</option>
@@ -588,11 +588,11 @@
               </label>
               <div class="flex items-center mt-2">
                 <input id="startYear" name="startYear" type="number" min="1900" max="2099"
-                  class="w-1/2 text-sm mr-2 rounded-md border bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="w-1/2 mr-2 rounded-md border bg-transparent px-3 py-2 text-sm border-gray-200 focus:outline-none"
                   required>
                 <span class="text-gray-600 font-medium">-</span>
                 <input id="endYear" name="endYear" type="number" min="1900" max="2099"
-                  class="w-1/2 text-sm ml-2 rounded-md border bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="w-1/2 ml-2 rounded-md border bg-transparent px-3 py-2 text-sm border-gray-200 focus:outline-none"
                   required>
               </div>
             </div>

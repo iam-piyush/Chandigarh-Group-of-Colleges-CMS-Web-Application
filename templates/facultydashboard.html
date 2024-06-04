@@ -59,9 +59,8 @@
 
   .modal-content {
     background-color: #fefefe;
-    margin: 3% auto;
-    border: 1px solid #888;
-    border-radius: 8px;
+    margin: 5% auto;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 2px 6px;
   }
 
   .close {
@@ -205,20 +204,34 @@
             </div>
           </div>
 
-          <div class="Buttons mt-4 text-sm flex items-center select-none overflow-x-auto whitespace-nowrap">
-            <div id="CCButton" onclick="showCCSection()" class="bg-gray-100 p-4 rounded-lg cursor-pointer mr-4 hidden">
+          <div class="Buttons mt-4 text-sm space-x-4 flex items-center select-none overflow-x-auto whitespace-nowrap">
+            <div id="CCButton" onclick="showCCSection()" class="bg-gray-100 p-4 rounded-lg cursor-pointer hidden">
               <p class="font-semibold">For Class Counselors</p>
               <p class="text-blue-700 font-semibold hover:underline cursor-pointer">
-                Click here to add your semester and sections.
+                Click here to add your semester and sections
               </p>
             </div>
             <div id="InstructorButton" onclick="showInstructorSection()"
               class="bg-gray-100 p-4 rounded-lg cursor-pointer">
               <p class="font-semibold">For Instructors</p>
               <p class="text-blue-700 font-semibold hover:underline cursor-pointer">
-                Click here to add your semester and sections.
+                Click here to add your semester and sections
               </p>
             </div>
+            <div id="AnnouncementButton" class="bg-gray-100 p-4 rounded-lg cursor-pointer">
+              <p class="font-semibold">Make</p>
+              <p class="text-blue-700 font-semibold hover:underline cursor-pointer">
+                an announcement
+              </p>
+            </div>
+            <a href="#announcementsSection" id="AnnouncementButton">
+              <div id="AnnouncementButton" class="bg-gray-100 p-4 rounded-lg cursor-pointer">
+                <p class="font-semibold">Show</p>
+                <p class="text-blue-700 font-semibold hover:underline cursor-pointer">
+                  all announcements
+                </p>
+              </div>
+            </a>
           </div>
         </div>
       </div>
@@ -1232,9 +1245,72 @@
       <!----------------------------------------------------- Students Attendance for Instructor End ----------------------------------------------------------->
     </div>
     </div>
+
+    <div id="announcementModal" class="modal hidden bg-[#f4f2ee]">
+      <div
+        class="modal-content rounded-lg w-[40%] max-[1000px]:w-[65%] max-[640px]:w-[80%] max-[500px]:w-[90%] max-h-[80%] max-[640px]:max-h-[95%] p-4">
+        <div class="flex justify-between items-center pb-2 mb-4 border-b">
+          <h2 class="text-lg font-semibold">Make Announcement</h2>
+          <div
+            class="close-modal flex items-center justify-center rounded-full h-10 w-10 border border-transparent transition-all ease-in-out duration-150 hover:bg-red-100 hover:cursor-pointer hover:border-red-300"
+            onclick="closeAnnouncementModal()">
+            <img loading="lazy" src="../static/Assets/close.png" class="h-5 w-5" alt="Close Modal" />
+          </div>
+        </div>
+        <form id="announcementForm" enctype="multipart/form-data">
+          <div class="space-y-4 mt-4">
+            <div>
+              <label for="title" class="text-base font-medium text-gray-900">Title</label>
+              <input type="text" id="title" name="title" class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md"
+                required>
+            </div>
+            <div>
+              <label for="organising_club" class="text-base font-medium text-gray-900">Organising Club</label>
+              <input type="text" id="organising_club" name="organising_club"
+                class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md" required>
+            </div>
+            <div>
+              <label for="registration_link" class="text-base font-medium text-gray-900">Registration Link</label>
+              <input type="text" id="registration_link" name="registration_link"
+                class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md" required>
+            </div>
+            <div>
+              <label for="event_date" class="text-base font-medium text-gray-900">Event Date</label>
+              <input type="date" id="event_date" name="event_date"
+                class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md" required>
+            </div>
+            <div>
+              <label for="banner" class="text-base font-medium text-gray-900">Banner Image</label>
+              <input type="file" id="banner" name="banner" class="w-full mt-2" accept="image/*" required>
+              <div id="fileSizeError" class="text-red-600 text-sm hidden">File size exceeds 5MB. Please choose a smaller
+                file.</div>
+            </div>
+            <div>
+              <label for="description" class="text-base font-medium text-gray-900">Description</label>
+              <textarea id="description" name="description"
+                class="w-full mt-2 border border-gray-200 px-3 py-2 rounded-md" rows="4" required></textarea>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <input type="hidden" id="fname" name="fname">
+                <input type="hidden" id="lname" name="lname">
+                <input type="hidden" id="userid" name="userid">
+                <p id="authorInfo" class="text-sm text-gray-600"></p>
+              </div>
+              <div>
+                <button id="publishButton" type="submit"
+                  class="px-6 py-2 bg-[#0a66c2] text-white text-sm rounded-full transition-colors duration-300 ease-in hover:bg-[#004182]">Publish</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div
       class="right ml-2 w-2/6 max-h-[1445px] space-y-2 overflow-auto max-[1148px]:mt-2 max-[1148px]:w-full max-[1148px]:ml-0 max-[1148px]:rounded-none">
-      <h2 class="font-semibold bg-white rounded-lg max-[1148px]:rounded-none border text-lg text-center py-4 max-[1148px]:text-left smForBanner:px-8 max-[580px]:px-3">
+      <h2
+        class="font-semibold bg-white rounded-lg max-[1148px]:rounded-none border text-lg text-center py-4 max-[1148px]:text-left smForBanner:px-8 max-[580px]:px-3">
         Announcements</h2>
       <div id="announcements"></div>
     </div>
@@ -1256,7 +1332,7 @@
               <label for="userid" class="text-base font-medium text-gray-900">User ID</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
                   type="text" id="userid" name="userid" value="{{ userid }}" readonly />
               </div>
             </div>
@@ -1264,7 +1340,7 @@
               <label for="fname" class="text-base font-medium text-gray-900">First Name</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
                   type="text" id="fname" name="fname" value="{{ fname }}" />
               </div>
             </div>
@@ -1272,7 +1348,7 @@
               <label for="lname" class="text-base font-medium text-gray-900">Last Name</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
                   type="text" id="lname" name="lname" value="{{ lname }}" />
               </div>
             </div>
@@ -1280,7 +1356,7 @@
               <label for="designation" class="text-base font-medium text-gray-900">Designation</label>
               <div class="mt-2">
                 <input
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
                   type="text" id="designation" name="designation" value="{{ designation }}" />
               </div>
             </div>
@@ -1288,7 +1364,7 @@
               <label for="role" class="text-base font-medium text-gray-900">Role</label>
               <div class="mt-2">
                 <select id="role" name="role"
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50">
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none">
                   {% if role == "Head of Department" %}
                   <option value="Head of Department" selected>
                     Head of Department
@@ -1359,7 +1435,7 @@
               <label for="departmentname" class="text-base font-medium text-gray-900">Department</label>
               <div class="mt-2">
                 <select
-                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  class="flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
                   id="departmentname" name="departmentname" class="rounded-md text-gray-900 w-full">
                   <option>{{ departmentname }}</option>
                 </select>
@@ -4072,8 +4148,8 @@
   document.addEventListener('DOMContentLoaded', function () {
     fetchUploadedAnnouncements();
 
-    // document.getElementById('AnnouncementButton').addEventListener('click', openAnnouncementModal);
-    // document.getElementById('announcementForm').addEventListener('submit', submitAnnouncementForm);
+    document.getElementById('AnnouncementButton').addEventListener('click', openAnnouncementModal);
+    document.getElementById('announcementForm').addEventListener('submit', submitAnnouncementForm);
 
     const fnameInput = document.getElementById('fname');
     const lnameInput = document.getElementById('lname');
