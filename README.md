@@ -73,9 +73,6 @@ Run the application :-
 - Faculty Dashboard
 ![App Screenshot](https://raw.githubusercontent.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/main/Screenshots/Faculty%20Dashboard.webp)
 
-- Assignment Dashboard
-![App Screenshot](https://github.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/blob/main/Screenshots/Assignment.png?raw=true)
-
 - Attendance Dashboard
 ![App Screenshot](https://github.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/blob/main/Screenshots/Attendance.png?raw=true)
 
@@ -85,8 +82,7 @@ Run the application :-
 - Marks Visualization
 ![App Screenshot](https://github.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/blob/main/Screenshots/Graph.png?raw=true)
 
-- Study Material
-![App Screenshot](https://github.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/blob/main/Screenshots/Study%20Material.png?raw=true)
+
 
 ## License
 
