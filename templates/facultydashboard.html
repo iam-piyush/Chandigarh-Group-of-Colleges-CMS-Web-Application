@@ -285,13 +285,13 @@
               </select>
 
               <div>
-                <select id="startYear" name="startYear" class="bg-transparent rounded-md text-sm py-2">
+                <select id="startYear" name="startYear" class="bg-transparent rounded-md text-sm py-2 focus:outline-none focus:ring-0">
                   <option value="">Start Year</option>
                   {% for year in range(2020, 2081) %}
                   <option value="{{ year }}">{{ year }}</option>
                   {% endfor %}
                 </select>
-                <select id="endYear" name="endYear" class="bg-transparent rounded-md text-sm py-2 ml-1">
+                <select id="endYear" name="endYear" class="bg-transparent rounded-md text-sm py-2 ml-1 focus:outline-none focus:ring-0">
                   <option value="">End Year</option>
                   {% for year in range(2020, 2081) %}
                   <option value="{{ year }}">{{ year }}</option>
@@ -504,7 +504,7 @@
                         <div>
                           <div class="font-bold" id="subject_name_for_mst_marks_table">{{ section.subject }}</div>
                           <div>
-                            {{ semester }}{{ get_semester_postfix(semester) }} {{ section.section }}
+                            <span id="semester_for_mst_marks_table">{{ semester }}{{ get_semester_postfix(semester) }}</span> {{ section.section }}
                             (<span id="batch_for_mst_marks_table">Batch: {{ section.batch }}</span>)
                           </div>
                         </div>
@@ -564,7 +564,8 @@
                         <div>
                           <div class="font-bold" id="subject_name_for_assignment">{{ section.subject }}</div>
                           <div>
-                            {{ semester }}{{ get_semester_postfix(semester) }} {{ section.section }}
+                            <span id="semester_for_assignment">{{ semester }}{{ get_semester_postfix(semester) }}</span>
+                            {{ section.section }}
                             (<span id="batch_for_assignment">Batch: {{ section.batch }}</span>)
                           </div>
                         </div>
@@ -828,13 +829,13 @@
 
 
             <div>
-              <select id="startYear" name="startYear" class="bg-transparent rounded-md text-sm py-2">
+              <select id="startYear" name="startYear" class="bg-transparent rounded-md text-sm py-2 focus:outline-none focus:ring-0">
                 <option value="">Start Year</option>
                 {% for year in range(2020, 2081) %}
                 <option value="{{ year }}">{{ year }}</option>
                 {% endfor %}
               </select>
-              <select id="endYear" name="endYear" class="bg-transparent rounded-md text-sm py-2 ml-1">
+              <select id="endYear" name="endYear" class="bg-transparent rounded-md text-sm py-2 ml-1 focus:outline-none focus:ring-0">
                 <option value="">End Year</option>
                 {% for year in range(2020, 2081) %}
                 <option value="{{ year }}">{{ year }}</option>
@@ -928,8 +929,9 @@
             </div>
           </div>
           <div class="h-14 px-3 flex justify-center items-center border-t">
-            <p class="my-auto font-semibold text-center max-[500px]:text-sm" id="subjectForMST"></p>(<p
-              class="my-auto font-semibold text-center max-[500px]:text-sm" id="batchForMST"></p>)
+            <p class="my-auto font-semibold text-center max-[500px]:text-sm" id="subjectForMST"></p>
+            <p class="my-auto font-semibold text-center max-[500px]:text-sm ml-2" id="semesterForMST"></p>
+            (<p class="my-auto font-semibold text-center max-[500px]:text-sm" id="batchForMST"></p>)
           </div>
           <div class="overflow-auto">
             <table class="table-auto w-full select-none" id="studentTableForInsMST">
@@ -1009,8 +1011,9 @@
             </div>
           </div>
           <div class="h-14 px-3 flex justify-center items-center border-t">
-            <p class="my-auto font-semibold text-center max-[500px]:text-sm" id="subjectForAssignment"></p>(<p
-              class="my-auto font-semibold text-center max-[500px]:text-sm" id="batchForAssignment"></p>)
+            <p class="my-auto font-semibold text-center max-[500px]:text-sm" id="subjectForAssignment"></p>
+            <p class="my-auto font-semibold text-center max-[500px]:text-sm ml-2" id="semesterForAssignment"></p>
+            (<p class="my-auto font-semibold text-center max-[500px]:text-sm" id="batchForAssignment"></p>)
           </div>
           <div class="overflow-auto">
             <table class="table-auto w-full select-none" id="studentTableForInsAssignment">
@@ -1182,7 +1185,7 @@
                 </svg>
               </div>
               <input type="date"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full ps-10 p-2.5"
                 placeholder="Select date" id="attendanceDate">
             </div>
             <div class="flex item-center justify-end my-auto">
@@ -2662,6 +2665,8 @@
       const batchText = this.querySelector('#batch_for_mst_marks_table').textContent;
       const batchValue = batchText.substring(7);
       document.getElementById('batchForMST').textContent = batchValue;
+      const semesterText = this.querySelector('#semester_for_mst_marks_table').textContent;
+      document.getElementById('semesterForMST').textContent = semesterText;
       document.getElementById('subjectMSTanalysis').innerHTML = `${subjectName}, MST Analysis`;
     });
   });
@@ -2749,11 +2754,13 @@
   function saveMSTMarks() {
     const subject = document.getElementById("subjectForMST").textContent.trim();
     const batch = document.getElementById("batchForMST").textContent.trim();
+    const semester = document.getElementById("semesterForMST").textContent.trim();
     const button = document.getElementById("saveButton");
 
     const marksData = {
       subject: subject,
       batch: batch,
+      semester: semester,
       students: Array.from(document.querySelectorAll("#studentTableForInsMST tbody tr")).map(row => {
         return {
           name: row.cells[1].textContent.trim(),
@@ -3136,6 +3143,8 @@
   function handleCheckboxChange(event, userid, assignmentNumber, status, checked) {
     const subject = document.getElementById('subjectForAssignment').textContent.trim();
     const batch = document.getElementById('batchForAssignment').textContent.trim();
+    const semester = document.getElementById('semesterForAssignment').textContent.trim();
+
 
     const checkboxes = document.querySelectorAll(`input[data-userid="${userid}"][data-assignment="assignment${assignmentNumber}"]`);
     checkboxes.forEach((checkbox) => {
@@ -3147,6 +3156,7 @@
     const assignmentData = {
       subject: subject,
       batch: batch,
+      semester: semester, 
       students: Array.from(document.querySelectorAll("#student-container-assignment tbody tr")).map(row => {
         const rollNumber = row.cells[2].textContent.trim();
         const assignment1Checked = row.cells[5].querySelector('input[name="assignment1Submitted"]').checked;
@@ -3164,6 +3174,8 @@
         };
       })
     };
+
+    console.log(assignmentData)
 
     fetch('/save_assignment', {
       method: 'POST',
@@ -3210,6 +3222,8 @@
       const batchText = this.querySelector('#batch_for_assignment').textContent;
       const batchValue = batchText.substring(7);
       document.getElementById('batchForAssignment').textContent = batchValue;
+      const semesterText = this.querySelector('#semester_for_assignment').textContent;
+      document.getElementById('semesterForAssignment').textContent = semesterText;
     });
   });
 

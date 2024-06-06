@@ -65,28 +65,28 @@ Run the application :-
 ## Screenshots
 
 - User Sign in
-![App Screenshot](https://raw.githubusercontent.com/iam-piyush/MyCGC/main/Screenshots/MyCGC%20Login.webp)
+![App Screenshot](https://raw.githubusercontent.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/main/Screenshots/MyCGC%20Login.webp)
 
 - Student Dashboard
-![App Screenshot](https://raw.githubusercontent.com/iam-piyush/MyCGC/main/Screenshots/Student%20Dashborad.webp)
+![App Screenshot](https://raw.githubusercontent.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/main/Screenshots/Student%20Dashborad.webp)
 
 - Faculty Dashboard
-![App Screenshot](https://raw.githubusercontent.com/iam-piyush/MyCGC/main/Screenshots/Faculty%20Dashboard.webp)
+![App Screenshot](https://raw.githubusercontent.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/main/Screenshots/Faculty%20Dashboard.webp)
 
 - Assignment Dashboard
-![App Screenshot](https://github.com/iam-piyush/MyCGC/blob/main/Screenshots/Assignment.png?raw=true)
+![App Screenshot](https://github.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/blob/main/Screenshots/Assignment.png?raw=true)
 
 - Attendance Dashboard
-![App Screenshot](https://github.com/iam-piyush/MyCGC/blob/main/Screenshots/Attendance.png?raw=true)
+![App Screenshot](https://github.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/blob/main/Screenshots/Attendance.png?raw=true)
 
 - Marks Dashboard
-![App Screenshot](https://github.com/iam-piyush/MyCGC/blob/main/Screenshots/MST%20Marks.png?raw=true)
+![App Screenshot](https://github.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/blob/main/Screenshots/MST%20Marks.png?raw=true)
 
 - Marks Visualization
-![App Screenshot](https://github.com/iam-piyush/MyCGC/blob/main/Screenshots/Graph.png?raw=true)
+![App Screenshot](https://github.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/blob/main/Screenshots/Graph.png?raw=true)
 
 - Study Material
-![App Screenshot](https://github.com/iam-piyush/MyCGC/blob/main/Screenshots/Study%20Material.png?raw=true)
+![App Screenshot](https://github.com/iam-piyush/Chandigarh-Group-of-Colleges-CMS-Web-Application/blob/main/Screenshots/Study%20Material.png?raw=true)
 
 ## License
 

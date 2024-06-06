@@ -546,7 +546,7 @@ def facultydashboard():
             if collegename == 'Chandigarh Engineering College':
                 if departmentname == 'Electronics and Communication Engineering':
                     if role == 'Class Counselor':
-                        db_folder = os.path.join('database', 'CEC', 'ECE')
+                        db_folder = os.path.join('database', 'Chandigarh Engineering College', 'Electronics and Communication Engineering')
                         db_path = os.path.join(db_folder, 'CC.db')
                     
                         conn = sqlite3.connect(db_path)
@@ -574,7 +574,7 @@ def facultydashboard():
 
 
 
-                        db_folder = os.path.join('database', 'CEC', 'ECE')
+                        db_folder = os.path.join('database', 'Chandigarh Engineering College', 'Electronics and Communication Engineering')
                         db_path = os.path.join(db_folder, 'Instructor.db')
                     
                         conn = sqlite3.connect(db_path)
@@ -603,7 +603,7 @@ def facultydashboard():
 
                     elif role == 'Instructor':
                         
-                        db_folder = os.path.join('database', 'CEC', 'ECE')
+                        db_folder = os.path.join('database', 'Chandigarh Engineering College', 'ECE')
                         db_path = os.path.join(db_folder, 'Instructor.db')
                     
                         conn = sqlite3.connect(db_path)
@@ -793,10 +793,12 @@ def class_details():
         role = user_data['role']
         userid = session['userid']
 
-        if collegename == 'Chandigarh Engineering College' and departmentname == 'Electronics and Communication Engineering':
-            if role == 'Class Counselor':
-                CCDB = os.path.join('database/CEC', 'ECE', 'CC.db')
+        CC_DB = os.path.join('database', collegename, departmentname, 'CC.db')
 
+        os.makedirs(os.path.dirname(CC_DB), exist_ok=True) #make all directories, if not exist
+
+        if role == 'Class Counselor':
+                
                 semester = request.form.get('semester')
                 section = request.form.get('section')
                 start_year = request.form.get('startYear')
@@ -806,7 +808,7 @@ def class_details():
                     flash('Please select all fields.', 'error')
                 else:
                     batch = f"{start_year}-{end_year}"
-                    conn = sqlite3.connect(CCDB)
+                    conn = sqlite3.connect(CC_DB)
                     c = conn.cursor()
                     c.execute("SELECT id FROM class_counselor WHERE userid = ? AND class LIKE ? AND batch = ?",
                               (userid, f"{semester}_%", batch))
@@ -823,13 +825,6 @@ def class_details():
                     conn.close()
 
                     return redirect(url_for('.facultydashboard'))
-
-            elif role in ['Academic Coordinator', 'Head of Department']:
-                flash('Invalid role', 'error')
-            else:
-                flash('Invalid department name', 'error')
-        else:
-            flash('Invalid college name', 'error')
 
         return redirect(url_for('.login'))
 
@@ -861,14 +856,11 @@ def instructor_details():
             flash('Please select semester, section, and subject.', 'error')
             return redirect(url_for('.facultydashboard'))
 
-        if collegename == 'Chandigarh Engineering College' and departmentname == 'Electronics and Communication Engineering':
-            db_folder = os.path.join('database', 'CEC', 'ECE')
-            db_path = os.path.join(db_folder, 'Instructor.db')
-        else:
-            flash('Invalid college or department name', 'error')
-            return redirect(url_for('.facultydashboard'))
+        INS_DB = os.path.join('database', collegename, departmentname, 'Instructor.db')
 
-        conn = sqlite3.connect(db_path)
+        os.makedirs(os.path.dirname(INS_DB), exist_ok=True) #make all directories, if not exist
+
+        conn = sqlite3.connect(INS_DB)
         c = conn.cursor()
 
         c.execute("INSERT INTO instructor_details (userid, class, subject, batch) VALUES (?, ?, ?, ?)", (userid, f"{semester}_{section}_{subject}", subject, batch))
@@ -1029,51 +1021,45 @@ def delete_class_details():
             section = request.args.get('section')
             subject = request.args.get('subject')
         
-            ###################################### For Chandigarh Engineering College ######################################
-            if collegename == 'Chandigarh Engineering College':
-                COLLEGEDB = 'database/CEC'
+            INS_DB = os.path.join('database', collegename, departmentname, 'Instructor.db')
 
-                ################################ Electronics and Communication Engineering ################################
-                if departmentname == 'Electronics and Communication Engineering':
-                   DEPTDB = os.path.join(COLLEGEDB, 'ECE')
+            CC_DB = os.path.join('database', collegename, departmentname, 'CC.db')
 
-                   ################################ Instructor (which includes CC, AC, HOD) ################################
-                   if role in ['Class Counselor', 'Academic Coordinator', 'Head of Department', 'Instructor']:
+            ################################ Instructor (which includes CC, AC, HOD) ################################
+            if role in ['Class Counselor', 'Academic Coordinator', 'Head of Department', 'Instructor']:
                       
-                      DB_PATH = os.path.join(DEPTDB, 'Instructor.db')
+                    try:
+                        conn = sqlite3.connect(INS_DB)
+                        c = conn.cursor()
 
-                      try:
-                          conn = sqlite3.connect(DB_PATH)
-                          c = conn.cursor()
-
-                          if section.endswith(('1', '2')):
+                        if section.endswith(('1', '2')):
     
-                             section_chars = ''.join(filter(str.isalpha, section))
-                             section_digits = ''.join(filter(str.isdigit, section))
-                             class_string = f"{semester}_{section_chars}{section_digits}_{subject}"
-                          else:
-                             class_string = f"{semester}_{section}_{subject}"
+                            section_chars = ''.join(filter(str.isalpha, section))
+                            section_digits = ''.join(filter(str.isdigit, section))
+                            class_string = f"{semester}_{section_chars}{section_digits}_{subject}"
+                        else:
+                            class_string = f"{semester}_{section}_{subject}"
                           
                           
-                          c.execute("DELETE FROM instructor_details WHERE userid=? AND class=? AND subject=?", 
-                                   (userid, class_string, subject))
+                        c.execute("DELETE FROM instructor_details WHERE userid=? AND class=? AND subject=?", 
+                                (userid, class_string, subject))
 
 
-                          if role == 'Class Counselor':
-                              CCDB_PATH = os.path.join(DEPTDB, 'CC.db')
-                              cc_conn = sqlite3.connect(CCDB_PATH)
-                              cc_c = cc_conn.cursor()
-                              cc_c.execute("DELETE FROM class_counselor WHERE userid=? AND class=?", (userid, f"{semester}_{section}"))
-                              cc_conn.commit()
-                              cc_conn.close()
+                        if role == 'Class Counselor':
+                            CCDB_PATH = os.path.join(CC_DB)
+                            cc_conn = sqlite3.connect(CCDB_PATH)
+                            cc_c = cc_conn.cursor()
+                            cc_c.execute("DELETE FROM class_counselor WHERE userid=? AND class=?", (userid, f"{semester}_{section}"))
+                            cc_conn.commit()
+                            cc_conn.close()
 
-                          conn.commit()
-                          conn.close()
+                        conn.commit()
+                        conn.close()
 
-                          return jsonify({'success': True}), 200
-                      except sqlite3.Error as e:
-                          print("SQLite error:", e)
-                          return jsonify({'error': str(e)}), 500
+                        return jsonify({'success': True}), 200
+                    except sqlite3.Error as e:
+                        print("SQLite error:", e)
+                        return jsonify({'error': str(e)}), 500
                       
 #################################### Route to delete class details End  ####################################
 
@@ -1130,62 +1116,52 @@ def save_attendance(student_data):
         departmentname = user_data['departmentname']
         batch = student_data.get('batch')
         subject = student_data.get('subject')
+        semester = student_data.get('semester')
         selected_date = student_data.get('date', '')
 
         try:
-            ####################### For Chandigarh Engineering College #######################
-            if collegename == 'Chandigarh Engineering College':
-                COLLEGEDB = 'database/CEC'
 
-                ####################### For Electronics and Communication Engineering #######################
-                if departmentname == 'Electronics and Communication Engineering':
-                    DEPTDB = os.path.join(COLLEGEDB, 'ECE')
+            # Build the database path
+            batch_db = batch.replace(' ', '_')
+            ATTENDANCE_DB = os.path.join(DATABASE_FOLDER, collegename, departmentname, batch_db, semester, 'Attendance', f'{subject}.db')
+            
+            os.makedirs(os.path.dirname(ATTENDANCE_DB), exist_ok=True)
 
-                    ####################### Attendance Database #######################
-                    ATTENDB = os.path.join(DEPTDB, 'Attendance')
+            with sqlite3.connect(ATTENDANCE_DB) as conn:
+                cursor = conn.cursor()
 
-                    BATCHDB = os.path.join(ATTENDB, batch.replace(' ', '_'))
+                cursor.execute('''CREATE TABLE IF NOT EXISTS attendance (
+                                    name TEXT,
+                                    roll_number INTEGER,
+                                    semester TEXT,
+                                    section TEXT,
+                                    subject TEXT
+                                )''')
 
-                    if not os.path.exists(BATCHDB):
-                           os.makedirs(BATCHDB)
+                cursor.execute("PRAGMA table_info(attendance)")
+                columns = [column[1] for column in cursor.fetchall()]
 
-                    ATTENDANCE_DATABASE = os.path.join(BATCHDB, f'{subject}.db')
+                if selected_date not in columns:
+                    cursor.execute(f"ALTER TABLE attendance ADD COLUMN '{selected_date}' TEXT DEFAULT NULL")
 
-                    with sqlite3.connect(ATTENDANCE_DATABASE) as conn:
-                        cursor = conn.cursor()
+                if isinstance(student_data, dict):
+                    name = student_data.get('name', '')
+                    roll_number = student_data.get('roll_number', '')
+                    semester = student_data.get('semester', '')
+                    section = student_data.get('section', '')
+                    batch = student_data.get('batch', '')
+                    subject = student_data.get('subject', '')
+                    present = 'Present' if student_data.get('present', False) else 'Absent'
 
-                        cursor.execute('''CREATE TABLE IF NOT EXISTS attendance (
-                                            name TEXT,
-                                            roll_number INTEGER,
-                                            semester TEXT,
-                                            section TEXT,
-                                            subject TEXT
-                                        )''')
+                    cursor.execute("SELECT * FROM attendance WHERE roll_number = ? AND subject = ?", (roll_number, subject))
+                    existing_attendance = cursor.fetchone()
 
-                        cursor.execute("PRAGMA table_info(attendance)")
-                        columns = [column[1] for column in cursor.fetchall()]
-
-                        if selected_date not in columns:
-                            cursor.execute(f"ALTER TABLE attendance ADD COLUMN '{selected_date}' TEXT DEFAULT NULL")
-
-                        if isinstance(student_data, dict):
-                            name = student_data.get('name', '')
-                            roll_number = student_data.get('roll_number', '')
-                            semester = student_data.get('semester', '')
-                            section = student_data.get('section', '')
-                            batch = student_data.get('batch', '')
-                            subject = student_data.get('subject', '')
-                            present = 'Present' if student_data.get('present', False) else 'Absent'
-
-                            cursor.execute("SELECT * FROM attendance WHERE roll_number = ? AND subject = ?", (roll_number, subject))
-                            existing_attendance = cursor.fetchone()
-
-                            if existing_attendance:
-                                cursor.execute(f"UPDATE attendance SET '{selected_date}' = ? WHERE roll_number = ? AND subject = ?", (present, roll_number, subject))
-                            else:
-                                cursor.execute(f"INSERT INTO attendance (name, roll_number, semester, section, subject, '{selected_date}') VALUES (?, ?, ?, ?, ?, ?)", (name, roll_number, semester, section, subject, present))
-                        else:
-                            print("Invalid data format for student")
+                    if existing_attendance:
+                        cursor.execute(f"UPDATE attendance SET '{selected_date}' = ? WHERE roll_number = ? AND subject = ?", (present, roll_number, subject))
+                    else:
+                        cursor.execute(f"INSERT INTO attendance (name, roll_number, semester, section, subject, '{selected_date}') VALUES (?, ?, ?, ?, ?, ?)", (name, roll_number, semester, section, subject, present))
+                else:
+                    print("Invalid data format for student")
 
         except sqlite3.Error as e:
             print("SQLite error:", e)
@@ -1214,48 +1190,38 @@ def save_marks(marks_data):
         departmentname = user_data['departmentname']
         batch = marks_data.get('batch')
         subject = marks_data.get('subject')
+        semester = marks_data.get('semester')
 
         try:
-            ####################### For Chandigarh Engineering College #######################
-            if collegename == 'Chandigarh Engineering College':
-                COLLEGEDB = 'database/CEC'
+                    
+            # Build the database path
+            batch_db = batch.replace(' ', '_')
+            MARKS_DB = os.path.join(DATABASE_FOLDER, collegename, departmentname, batch_db, semester, 'MST_Marks', f'{subject}.db')
 
-                ####################### For Electronics and Communication Engineering #######################
-                if departmentname == 'Electronics and Communication Engineering':
-                    DEPTDB = os.path.join(COLLEGEDB, 'ECE')
+            os.makedirs(os.path.dirname(MARKS_DB), exist_ok=True)
 
-                    ####################### Marks Database #######################
-                    MARKSDB = os.path.join(DEPTDB, 'MST_Marks')
+            with sqlite3.connect(MARKS_DB) as conn:
+                cursor = conn.cursor()
 
-                    BATCHDB = os.path.join(MARKSDB, batch.replace(' ', '_'))
+                cursor.execute('''CREATE TABLE IF NOT EXISTS marks (
+                                    name TEXT,
+                                    roll_number INTEGER,
+                                    semester TEXT,
+                                    section TEXT,
+                                    mst1 INTEGER,
+                                    mst2 INTEGER
+                                )''')
 
-                    if not os.path.exists(BATCHDB):
-                           os.makedirs(BATCHDB)
+                if 'students' in marks_data:
+                    for student in marks_data['students']:
+                        cursor.execute("SELECT * FROM marks WHERE roll_number = ?", (student['roll_number'],))
+                        existing_student = cursor.fetchone()
 
-                    MARKS_DATABASE = os.path.join(BATCHDB, f'{subject}.db')
-
-                    with sqlite3.connect(MARKS_DATABASE) as conn:
-                        cursor = conn.cursor()
-
-                        cursor.execute('''CREATE TABLE IF NOT EXISTS marks (
-                                            name TEXT,
-                                            roll_number INTEGER,
-                                            semester TEXT,
-                                            section TEXT,
-                                            mst1 INTEGER,
-                                            mst2 INTEGER
-                                        )''')
-
-                        if 'students' in marks_data:
-                            for student in marks_data['students']:
-                                cursor.execute("SELECT * FROM marks WHERE roll_number = ?", (student['roll_number'],))
-                                existing_student = cursor.fetchone()
-
-                                if existing_student:
-                                    cursor.execute("UPDATE marks SET mst1 = ?, mst2 = ? WHERE roll_number = ?", (student['mst1'], student['mst2'], student['roll_number']))
-                                else:
-                                    cursor.execute("INSERT INTO marks (name, roll_number, semester, section, mst1, mst2) VALUES (?, ?, ?, ?, ?, ?)", 
-                                                   (student['name'], student['roll_number'], student['semester'], student['section'], student['mst1'], student['mst2']))
+                        if existing_student:
+                            cursor.execute("UPDATE marks SET mst1 = ?, mst2 = ? WHERE roll_number = ?", (student['mst1'], student['mst2'], student['roll_number']))
+                        else:
+                            cursor.execute("INSERT INTO marks (name, roll_number, semester, section, mst1, mst2) VALUES (?, ?, ?, ?, ?, ?)", 
+                                            (student['name'], student['roll_number'], student['semester'], student['section'], student['mst1'], student['mst2']))
 
         except sqlite3.Error as e:
             print("SQLite error:", e)
@@ -1270,58 +1236,50 @@ def save_marks(marks_data):
 @routes_bp.route('/fetch_existing_mst_marks', methods=['GET'])
 def fetch_existing_mst_marks():
     try:
-        if 'user_data' in session:
-            user_data = session['user_data']
-            collegename = user_data['collegename']
-            departmentname = user_data['departmentname']
-            semester = request.args.get('semester')
-            section = request.args.get('section')
-            batch = request.args.get('batch')
-            subject = request.args.get('subject')
-            roll_number = request.args.get('rollNumber')
+        if 'user_data' not in session:
+            return jsonify({'error': 'User data not found in session'}), 400
+
+        user_data = session['user_data']
+        collegename = user_data.get('collegename')
+        departmentname = user_data.get('departmentname')
+        semester = request.args.get('semester')
+        section = request.args.get('section')
+        batch = request.args.get('batch')
+        subject = request.args.get('subject')
+        roll_number = request.args.get('rollNumber')
+
+        if not all([collegename, departmentname, semester, section, batch, subject, roll_number]):
+            return jsonify({'error': 'Missing required parameters'}), 400
+
+        # Build the database path
+        batch_db = batch.replace(' ', '_')
+        MARKS_DB = os.path.join(DATABASE_FOLDER, collegename, departmentname, batch_db, semester, 'MST_Marks', f'{subject}.db')
 
         marks_data = {}
-
-        if collegename == 'Chandigarh Engineering College':
-            COLLEGEDB = 'database/CEC'
-
-            if departmentname == 'Electronics and Communication Engineering':
-                DEPTDB = os.path.join(COLLEGEDB, 'ECE')
-                MARKSDB = os.path.join(DEPTDB, 'MST_Marks')
-                BATCHDB = os.path.join(MARKSDB, batch.replace(' ', '_'))
-
-                if not os.path.exists(BATCHDB):
-                    os.makedirs(BATCHDB)
-
-                MARKS_DATABASE = os.path.join(BATCHDB, f'{subject}.db')
-
-                with sqlite3.connect(MARKS_DATABASE) as conn:
-                    cursor = conn.cursor()
-
-                    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='marks'")
-                    table_exists = cursor.fetchone()
-
-                    if table_exists:
-                        cursor.execute("SELECT mst1, mst2 FROM marks WHERE roll_number = ? AND semester = ? AND section = ?", (roll_number, semester, section))
-                        existing_marks = cursor.fetchone()
-
-                        marks_data[roll_number] = {
-                            'mst1': existing_marks[0],
-                            'mst2': existing_marks[1]
-                        }
+        try:
+            with sqlite3.connect(MARKS_DB) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='marks'")
+                if cursor.fetchone():
+                    cursor.execute(
+                        "SELECT mst1, mst2 FROM marks WHERE roll_number = ? AND semester = ? AND section = ?",
+                        (roll_number, semester, section)
+                    )
+                    existing_marks = cursor.fetchone()
+                    if existing_marks:
+                        marks_data[roll_number] = {'mst1': existing_marks[0], 'mst2': existing_marks[1]}
+                    else:
+                        marks_data[roll_number] = {'mst1': None, 'mst2': None}
+        except sqlite3.Error as e:
+            print("SQLite error:", e)
+            return jsonify({'error': 'Database error occurred'}), 500
 
         return jsonify(marks_data)
 
-    except sqlite3.Error as e:
-        print("SQLite error:", e)
-        return jsonify({'error': 'Failed to fetch existing MST marks'}), 500
     except Exception as e:
         print("Error fetching existing marks data:", e)
-        return jsonify({'error': 'Failed to fetch existing MST marks'}), 500
+        return jsonify({'error': 'An unexpected error occurred'}), 500
     
-
-
-
 ######################################## Fetch Existing Assignment Status ##################################################
 
 @routes_bp.route('/fetch_existing_assignment_status', methods=['GET'])
@@ -1330,32 +1288,33 @@ def fetch_existing_assignment_status():
         roll_number = request.args.get('rollNumber')
         batch = request.args.get('batch')
         subject = request.args.get('subject')
+        semester = request.args.get('semester')
 
         if 'user_data' in session:
             user_data = session['user_data']
             collegename = user_data['collegename']
             departmentname = user_data['departmentname']
 
-            if collegename == 'Chandigarh Engineering College' and departmentname == 'Electronics and Communication Engineering':
-                COLLEGEDB = 'database/CEC'
-                DEPTDB = os.path.join(COLLEGEDB, 'ECE')
-                ASSIGNMENT_DB = os.path.join(DEPTDB, 'Assignment')
-                BATCH_DB = os.path.join(ASSIGNMENT_DB, batch.replace(' ', '_'))
-                ASSIGNMENT_DATABASE = os.path.join(BATCH_DB, f'{subject}.db')
+            batch_db = batch.replace(' ', '_')
+            ASSIGNMENT_DB = os.path.join(DATABASE_FOLDER, collegename, departmentname, batch_db, semester, 'Assignment', f'{subject}.db')
 
-                with sqlite3.connect(ASSIGNMENT_DATABASE) as conn:
-                    cursor = conn.cursor()
-                    cursor.execute("SELECT * FROM marks WHERE roll_number = ?", (roll_number,))
-                    row = cursor.fetchone()
-                    if row:
-                        columns = [column[0] for column in cursor.description]
-                        assignment_status = dict(zip(columns, row))
-                        return jsonify({roll_number: assignment_status})
-                    else:
-                        return jsonify({'message': 'No data found for the given roll number'}), 200
+            with sqlite3.connect(ASSIGNMENT_DB) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM marks WHERE roll_number = ?", (roll_number,))
+                row = cursor.fetchone()
+                if row:
+                    columns = [column[0] for column in cursor.description]
+                    assignment_status = dict(zip(columns, row))
+                    return jsonify({roll_number: assignment_status})
+                else:
+                    return jsonify({'message': 'No data found for the given roll number'}), 200
+                
         return jsonify({'error': 'Failed to fetch assignment status'}), 500
+    
     except Exception as e:
+
         print("Error fetching assignment status:", e)
+
         return jsonify({'error': 'Failed to fetch assignment status'}), 500
 
 
@@ -1374,25 +1333,12 @@ def check_attendance_existence():
         rollNumber = request.args.get('rollNumber')
         selectedDate = request.args.get('selectedDate')
 
-        ####################### For Chandigarh Engineering College #######################
-        if collegename == 'Chandigarh Engineering College':
-            COLLEGEDB = 'database/CEC'
-            
-            ####################### For Electronics and Communication Engineering #######################
-            if departmentname == 'Electronics and Communication Engineering':
-                DEPTDB = os.path.join(COLLEGEDB, 'ECE')
-                
-                ####################### Attendance Database #######################
-                ATTENDB = os.path.join(DEPTDB, 'Attendance')
-                
-                BATCHDB = os.path.join(ATTENDB, batch.replace(' ', '_'))
-                
-                
-
-    ATTENDANCE_DATABASE = os.path.join(BATCHDB, f'{subject}.db')
+    # Build the database path
+    batch_db = batch.replace(' ', '_')
+    ATTENDANCE_DB = os.path.join(DATABASE_FOLDER, collegename, departmentname, batch_db, semester, 'Attendance', f'{subject}.db')
 
     try:
-        conn = sqlite3.connect(ATTENDANCE_DATABASE)
+        conn = sqlite3.connect(ATTENDANCE_DB)
         cursor = conn.cursor()
 
         cursor.execute("PRAGMA table_info(attendance)")
@@ -1442,44 +1388,40 @@ def save_data(assignment_data):
         semester = assignment_data.get('semester')
 
         try:
-            if collegename == 'Chandigarh Engineering College':
-                COLLEGEDB = 'database/CEC'
-                if departmentname == 'Electronics and Communication Engineering':
-                    DEPTDB = os.path.join(COLLEGEDB, 'ECE')
-                    BATCH_DB = os.path.join(DEPTDB, batch.replace(' ', '_'))
-                    ASSIGNMENT_DATABASE = os.path.join(BATCH_DB, 'Assignemnt', semester, f'{subject}.db')
+            
+            batch_db = batch.replace(' ', '_')
+            ASSIGNMENT_DB = os.path.join(DATABASE_FOLDER, collegename, departmentname, batch_db, semester, 'Assignment', f'{subject}.db')
 
-                    if not os.path.exists(BATCH_DB):
-                        os.makedirs(BATCH_DB)
+            os.makedirs(os.path.dirname(ASSIGNMENT_DB), exist_ok=True)
 
-                    with sqlite3.connect(ASSIGNMENT_DATABASE) as conn:
-                        cursor = conn.cursor()
+            with sqlite3.connect(ASSIGNMENT_DB) as conn:
+                cursor = conn.cursor()
 
-                        cursor.execute('''CREATE TABLE IF NOT EXISTS marks (
-                                            name TEXT,
-                                            roll_number INTEGER PRIMARY KEY,
-                                            semester TEXT,
-                                            section TEXT,
-                                            assignment1 TEXT,
-                                            assignment2 TEXT
-                                        )''')
+                cursor.execute('''CREATE TABLE IF NOT EXISTS marks (
+                                    name TEXT,
+                                    roll_number INTEGER PRIMARY KEY,
+                                    semester TEXT,
+                                    section TEXT,
+                                    assignment1 TEXT,
+                                    assignment2 TEXT
+                                )''')
 
-                        if 'students' in assignment_data:
-                            for student in assignment_data['students']:
-                                assignment1 = student.get('assignment1', 'Not Submitted')
-                                assignment2 = student.get('assignment2', 'Not Submitted')
-                                roll_number = student['roll_number']
+                if 'students' in assignment_data:
+                    for student in assignment_data['students']:
+                        assignment1 = student.get('assignment1', 'Not Submitted')
+                        assignment2 = student.get('assignment2', 'Not Submitted')
+                        roll_number = student['roll_number']
 
-                                cursor.execute("SELECT * FROM marks WHERE roll_number = ?", (roll_number,))
-                                existing_student = cursor.fetchone()
+                        cursor.execute("SELECT * FROM marks WHERE roll_number = ?", (roll_number,))
+                        existing_student = cursor.fetchone()
 
-                                if existing_student:
-                                    cursor.execute("UPDATE marks SET assignment1 = ?, assignment2 = ? WHERE roll_number = ?", 
-                                                   (assignment1, assignment2, roll_number))
-                                else:
-                                    cursor.execute("INSERT INTO marks (name, roll_number, semester, section, assignment1, assignment2) VALUES (?, ?, ?, ?, ?, ?)", 
-                                                   (student['name'], roll_number, student['semester'], student['section'], assignment1, assignment2))
-                        conn.commit()
+                        if existing_student:
+                            cursor.execute("UPDATE marks SET assignment1 = ?, assignment2 = ? WHERE roll_number = ?", 
+                                            (assignment1, assignment2, roll_number))
+                        else:
+                            cursor.execute("INSERT INTO marks (name, roll_number, semester, section, assignment1, assignment2) VALUES (?, ?, ?, ?, ?, ?)", 
+                                            (student['name'], roll_number, student['semester'], student['section'], assignment1, assignment2))
+                conn.commit()
 
         except sqlite3.Error as e:
             print("SQLite error:", e)
@@ -1502,23 +1444,11 @@ def my_attendances():
         subject = request.args.get('subject')
         rollNumber = request.args.get('rollNumber')
 
-        ####################### For Chandigarh Engineering College #######################
-        if collegename == 'Chandigarh Engineering College':
-            COLLEGEDB = 'database/CEC'
-            
-            ####################### For Electronics and Communication Engineering #######################
-            if departmentname == 'Electronics and Communication Engineering':
-                DEPTDB = os.path.join(COLLEGEDB, 'ECE')
-                
-                ####################### Attendance Database #######################
-                ATTENDB = os.path.join(DEPTDB, 'Attendance')
-                
-                BATCHDB = os.path.join(ATTENDB, batch.replace(' ', '_'))
-                
-    ATTENDANCE_DATABASE = os.path.join(BATCHDB, f'{subject}.db')
+    batch_db = batch.replace(' ', '_')
+    ATTENDANCE_DB = os.path.join(DATABASE_FOLDER, collegename, departmentname, batch_db, semester, 'Attendance', f'{subject}.db')
 
     try:
-        conn = sqlite3.connect(ATTENDANCE_DATABASE)
+        conn = sqlite3.connect(ATTENDANCE_DB)
         cursor = conn.cursor()
 
         cursor.execute("PRAGMA table_info(attendance)")
@@ -1559,15 +1489,19 @@ def my_attendances():
 def my_mst_marks():
     if 'user_data' in session:
         user_data = session['user_data']
+        collegename = user_data['collegename']
+        departmentname = user_data['departmentname']
         rollNumber = request.args.get('rollNumber')
         subject = request.args.get('subject')
+        semester = request.args.get('semester')
+        batch = request.args.get('batch')
 
-        # Assuming your database directory structure is organized as you mentioned
-        COLLEGEDB = 'database/CEC/ECE/MST_Marks/2021-2025'
-        MST_MARKS_DATABASE = os.path.join(COLLEGEDB, f'{subject}.db')
+        # Build the database path
+        batch_db = batch.replace(' ', '_')
+        MARKS_DB = os.path.join(DATABASE_FOLDER, collegename, departmentname, batch_db, semester, 'MST_Marks', f'{subject}.db')
 
         try:
-            conn = sqlite3.connect(MST_MARKS_DATABASE)
+            conn = sqlite3.connect(MARKS_DB)
             cursor = conn.cursor()
 
             cursor.execute(f"SELECT * FROM marks WHERE roll_number = ?", (rollNumber,))
@@ -1597,15 +1531,18 @@ def my_mst_marks():
 def my_assignment():
     if 'user_data' in session:
         user_data = session['user_data']
+        collegename = user_data['collegename']
+        departmentname = user_data['departmentname']
         rollNumber = request.args.get('rollNumber')
         subject = request.args.get('subject')
+        semester = request.args.get('semester')
+        batch = request.args.get('batch')
 
-        # Assuming your database directory structure is organized as you mentioned
-        COLLEGEDB = 'database/CEC/ECE/Assignment/2021-2025'
-        ASSIGNMENT_DATABASE = os.path.join(COLLEGEDB, f'{subject}.db')
+        batch_db = batch.replace(' ', '_')
+        ASSIGNMENT_DB = os.path.join(DATABASE_FOLDER, collegename, departmentname, batch_db, semester, 'Assignment', f'{subject}.db')
 
         try:
-            conn = sqlite3.connect(ASSIGNMENT_DATABASE)
+            conn = sqlite3.connect(ASSIGNMENT_DB)
             cursor = conn.cursor()
 
             cursor.execute(f"SELECT * FROM marks WHERE roll_number = ?", (rollNumber,))
